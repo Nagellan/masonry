@@ -1,4 +1,29 @@
 import { createRoot } from 'react-dom/client';
-import App from './App.tsx';
+import { createBrowserRouter, RouterProvider } from 'react-router';
 
-createRoot(document.getElementById('root')!).render(<App />);
+import { Grid } from './pages/Grid';
+import { Photo } from './pages/Photo';
+import { NotFound } from './pages/NotFound';
+
+const root = document.getElementById('root');
+
+if (!root) {
+	throw new Error('There is no root element!');
+}
+
+const router = createBrowserRouter([
+	{
+		index: true,
+		Component: Grid,
+	},
+	{
+		path: '/photo/:photoId',
+		Component: Photo,
+	},
+	{
+		path: '*',
+		Component: NotFound,
+	},
+]);
+
+createRoot(root).render(<RouterProvider router={router} />);

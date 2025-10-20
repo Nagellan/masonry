@@ -3,11 +3,9 @@ import styled from 'styled-components';
 const Square = styled.div`
 	height: 50px;
 	width: 50px;
-	background-color: red;
+	background-color: blue;
 `;
 
-function App() {
+export const Photo = () => {
 	return <Square />;
-}
-
-export default App;
+};
