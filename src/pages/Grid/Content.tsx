@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 
 import api from '@/api';
 import type { Photo } from '@/api/types';
 
 import { useColumns } from './useColumns';
+import { useLoadOnScroll } from './useLoadOnScroll';
 
 const Wrapper = styled.main`
 	display: flex;
@@ -25,16 +26,27 @@ const Photo = styled.img`
 `;
 
 export const Content = () => {
+	const wrapperRef = useRef<HTMLElement>(null);
+
+	const [page, setPage] = useState<number>(1);
 	const [photos, setPhotos] = useState<Photo[]>([]);
-
-	useEffect(() => {
-		api.getPhotos(1, 40).then((response) => setPhotos(response.photos));
-	}, []);
-
 	const columns = useColumns();
 
+	const onScrollEnd = useCallback(() => {
+		setPage((prev) => prev + 1);
+	}, []);
+
+	const onLoaded = useLoadOnScroll(wrapperRef, onScrollEnd);
+
+	useEffect(() => {
+		api.getPhotos(page, 40).then((response) => {
+			setPhotos((prevPhotos) => [...prevPhotos, ...response.photos]);
+			onLoaded();
+		});
+	}, [page, onLoaded]);
+
 	return (
-		<Wrapper>
+		<Wrapper ref={wrapperRef}>
 			{Array.from({ length: columns }, (_, columnIndex) => (
 				<Column key={columnIndex}>
 					{photos
