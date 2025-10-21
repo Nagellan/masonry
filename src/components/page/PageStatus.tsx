@@ -18,9 +18,15 @@ const MaxWidthColumn = styled.div`
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 8px;
+	gap: 16px;
 
 	text-align: center;
+`;
+
+const Texts = styled.div`
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
 `;
 
 const Title = styled.h2`
@@ -42,8 +48,10 @@ export const PageStatus = ({ title, description, action }: Props) => {
 	return (
 		<FullScreen>
 			<MaxWidthColumn>
-				<Title>{title}</Title>
-				<Description>{description}</Description>
+				<Texts>
+					<Title>{title}</Title>
+					<Description>{description}</Description>
+				</Texts>
 				{action}
 			</MaxWidthColumn>
 		</FullScreen>
