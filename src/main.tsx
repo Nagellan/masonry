@@ -5,6 +5,8 @@ import { Grid } from './pages/Grid';
 import { Photo } from './pages/Photo';
 import { NotFound } from './pages/NotFound';
 
+import './index.css';
+
 const root = document.getElementById('root');
 
 if (!root) {
