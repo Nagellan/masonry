@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 
 import { PageError } from './PageError';
+import { PageFooter } from './PageFooter';
 
 const Wrapper = styled.div`
 	height: 100vh;
@@ -17,6 +18,7 @@ export const Page = ({ children }: Props) => {
 	return (
 		<Wrapper>
 			<ErrorBoundary fallback={<PageError />}>{children}</ErrorBoundary>
+			<PageFooter />
 		</Wrapper>
 	);
 };
