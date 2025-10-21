@@ -1,17 +1,24 @@
-import styled from 'styled-components';
-import { Link } from 'react-router';
+import { useCallback } from 'react';
+import { useNavigate } from 'react-router';
 
-const Column = styled.div`
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
-`;
+import { Page } from '@/components/page/Page';
+import { PageStatus } from '@/components/page/PageStatus';
+import { Button } from '@/components/ui/Button';
 
 export const NotFound = () => {
+	const navigate = useNavigate();
+
+	const onClick = useCallback(() => {
+		navigate('/');
+	}, [navigate]);
+
 	return (
-		<Column>
-			<h1>Page not found!</h1>
-			<Link to="/">Go home</Link>
-		</Column>
+		<Page>
+			<PageStatus
+				title="ERROR: 404"
+				description="Page not found."
+				action={<Button onClick={onClick}>Go home</Button>}
+			/>
+		</Page>
 	);
 };

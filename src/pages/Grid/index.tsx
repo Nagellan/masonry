@@ -1,11 +1,11 @@
-import styled from 'styled-components';
+import { Page } from '@/components/page/Page';
 
-const Square = styled.div`
-	height: 50px;
-	width: 50px;
-	background-color: red;
-`;
+import { Content } from './Content';
 
 export const Grid = () => {
-	return <Square />;
+	return (
+		<Page>
+			<Content />
+		</Page>
+	);
 };
