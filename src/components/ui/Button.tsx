@@ -12,6 +12,7 @@ const Wrapper = styled.button`
 	color: white;
 	background-color: black;
 	font-size: 14px;
+	cursor: pointer;
 `;
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement>;

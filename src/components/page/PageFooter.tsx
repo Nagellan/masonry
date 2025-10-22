@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 
+import { Bubble as UIBubble } from '@/components/ui/Bubble';
+
 const Footer = styled.footer`
 	position: fixed;
 	bottom: 0px;
@@ -13,16 +15,7 @@ const Footer = styled.footer`
 	gap: 4px;
 `;
 
-const Bubble = styled.div`
-	display: inline;
-	flex-shrink: 0;
-
-	padding: 10px 12px;
-	border-radius: 20px;
-
-	background-color: #ffffff80;
-	backdrop-filter: blur(10px);
-
+const Bubble = styled(UIBubble)`
 	font-size: 14px;
 `;
 
