@@ -7,6 +7,8 @@ import { PageError } from './PageError';
 
 const Wrapper = styled.div`
 	height: 100vh;
+	display: flex;
+	flex-direction: column;
 `;
 
 type Props = {

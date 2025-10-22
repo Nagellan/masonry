@@ -5,7 +5,8 @@ import { Bubble as UIBubble } from '@/components/ui/Bubble';
 const Footer = styled.footer`
 	position: fixed;
 	bottom: 0px;
-	width: 100%;
+	left: 0;
+	right: 0;
 	padding: 4px;
 
 	display: flex;
@@ -13,6 +14,8 @@ const Footer = styled.footer`
 	justify-content: center;
 	flex-wrap: wrap;
 	gap: 4px;
+
+	z-index: 1;
 `;
 
 const Bubble = styled(UIBubble)`

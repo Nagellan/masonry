@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Link } from 'react-router';
 
 import api from '@/api';
-import type { Photo } from '@/api/types';
+import type { Photo as PhotoType } from '@/api/types';
 
 import { useColumns } from './useColumns';
 import { useLoadOnScroll } from './useLoadOnScroll';
@@ -58,7 +58,7 @@ export const Content = () => {
 	const wrapperRef = useRef<HTMLElement>(null);
 
 	const [page, setPage] = useState<number>(1);
-	const [photos, setPhotos] = useState<Photo[]>([]);
+	const [photos, setPhotos] = useState<PhotoType[]>([]);
 	const columns = useColumns();
 
 	const onScrollEnd = useCallback(() => {
