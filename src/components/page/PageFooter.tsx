@@ -24,17 +24,21 @@ export const PageFooter = () => {
 		<Footer>
 			<Bubble>
 				Photos provided by{' '}
-				<a href="https://pexels.com" target="_blank">
+				<a href="https://pexels.com" target="_blank" tabIndex={1}>
 					Pexels
 				</a>
 			</Bubble>
 			<Bubble>
 				Made by{' '}
-				<a href="https://github.com/Nagellan" target="_blank">
+				<a
+					href="https://github.com/Nagellan"
+					target="_blank"
+					tabIndex={2}
+				>
 					ireknazm
 				</a>{' '}
 				for{' '}
-				<a href="https://picsart.com" target="_blank">
+				<a href="https://picsart.com" target="_blank" tabIndex={3}>
 					Picsart
 				</a>
 			</Bubble>
