@@ -23,7 +23,7 @@ export const Photo = () => {
 	const params = useParams();
 
 	const [photo, setPhoto] = useState<PhotoType | null>(null);
-	const [maxWidth, setMaxWidth] = useState<number>(100);
+	const [width, setWidth] = useState<number>(100);
 
 	useEffect(() => {
 		if (!params.photoId) {
@@ -70,25 +70,25 @@ export const Photo = () => {
 					<FixedSizeButton
 						key="plus"
 						onClick={() =>
-							setMaxWidth((prev) => Math.min(prev + 10, 200))
+							setWidth((prev) => Math.min(prev + 10, 200))
 						}
 					>
 						+
 					</FixedSizeButton>,
-					<Button key="full" onClick={() => setMaxWidth(100)}>
-						{maxWidth}%
+					<Button key="full" onClick={() => setWidth(100)}>
+						{width}%
 					</Button>,
 					<FixedSizeButton
 						key="minus"
 						onClick={() =>
-							setMaxWidth((prev) => Math.max(prev - 10, 10))
+							setWidth((prev) => Math.max(prev - 10, 10))
 						}
 					>
 						-
 					</FixedSizeButton>,
 				]}
 			/>
-			<Content photo={photo} maxWidth={maxWidth} />
+			<Content photo={photo} width={width} />
 			<PageFooter />
 		</Page>
 	);
