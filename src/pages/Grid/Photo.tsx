@@ -1,9 +1,6 @@
-import { memo, useCallback } from 'react';
+import { memo } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router';
-
-import { useInViewport } from './useInViewport';
-import type { Position } from './useInViewport';
 
 const PhotoLink = styled(Link)`
 	display: flex;
@@ -38,25 +35,11 @@ type Props = {
 	src: string;
 	alt?: string;
 	tabIndex: number;
-	onView: (
-		id: number,
-		inView: boolean,
-		position: Position,
-		height: number,
-	) => void;
 };
 
-export const Photo = memo(({ id, src, alt, tabIndex, onView }: Props) => {
-	const proxyOnView = useCallback(
-		(inView: boolean, position: Position, height: number) =>
-			onView(id, inView, position, height),
-		[id, onView],
-	);
-
-	const ref = useInViewport<HTMLAnchorElement>(proxyOnView);
-
+export const Photo = memo(({ id, src, alt, tabIndex }: Props) => {
 	return (
-		<PhotoLink to={`/photo/${id}`} tabIndex={tabIndex} ref={ref}>
+		<PhotoLink to={`/photo/${id}`} tabIndex={tabIndex}>
 			<Container
 				src={src}
 				alt={alt}
