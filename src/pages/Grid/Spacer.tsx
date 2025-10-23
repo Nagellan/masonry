@@ -3,10 +3,9 @@ import styled from 'styled-components';
 import { useInViewport } from './useInViewport';
 import type { Position } from './useInViewport';
 
-const Wrapper = styled.div<{ $height: number }>`
+const Wrapper = styled.div`
 	display: flex;
 	flex-shrink: 0;
-	height: ${(props) => props.$height}px;
 `;
 
 type Props = {
@@ -17,5 +16,5 @@ type Props = {
 export const Spacer = ({ height, onView }: Props) => {
 	const ref = useInViewport<HTMLDivElement>(onView);
 
-	return <Wrapper $height={height} ref={ref} />;
+	return <Wrapper ref={ref} style={{ height }} />;
 };

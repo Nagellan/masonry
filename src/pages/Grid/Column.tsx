@@ -41,11 +41,11 @@ export const Column = ({ photos, gap, getTabIndex }: Props) => {
 			} else {
 				if (position === 'top')
 					setTopHeight(
-						(prev) => prev + height + (prev === 0 ? 1 : gap),
+						(prev) => prev + height + (prev === 0 ? 0 : gap),
 					);
 				if (position === 'bottom')
 					setBottomHeight(
-						(prev) => prev + height + (prev === 0 ? 1 : gap),
+						(prev) => prev + height + (prev === 0 ? 0 : gap),
 					);
 			}
 
