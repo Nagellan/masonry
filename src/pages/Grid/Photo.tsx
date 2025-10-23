@@ -45,6 +45,11 @@ export const Photo = memo(({ id, src, alt, tabIndex, onLoad, top }: Props) => {
 			onLoad(id, img.clientHeight);
 		};
 
+		if (img.complete) {
+			onImageLoad();
+			return;
+		}
+
 		img.addEventListener('load', onImageLoad);
 
 		return () => {
@@ -59,9 +64,8 @@ export const Photo = memo(({ id, src, alt, tabIndex, onLoad, top }: Props) => {
 				ref={ref}
 				src={src}
 				alt={alt}
-				srcSet={`${src}?auto=compress&cs=tinysrgb&w=150&loading=lazy 150w, ${src}?auto=compress&cs=tinysrgb&w=300&loading=lazy 300w, ${src}?auto=compress&cs=tinysrgb&w=400&loading=lazy 400w, ${src}?auto=compress&cs=tinysrgb&w=600&loading=lazy 600w, ${src}?auto=compress&cs=tinysrgb&w=800&loading=lazy 800w, ${src}?auto=compress&cs=tinysrgb&w=1200&loading=lazy 1200w, ${src}?auto=compress&cs=tinysrgb&w=1600&loading=lazy 1600w`}
+				srcSet={`${src}?auto=compress&cs=tinysrgb&w=150 150w, ${src}?auto=compress&cs=tinysrgb&w=300 300w, ${src}?auto=compress&cs=tinysrgb&w=400 400w, ${src}?auto=compress&cs=tinysrgb&w=600 600w, ${src}?auto=compress&cs=tinysrgb&w=800 800w, ${src}?auto=compress&cs=tinysrgb&w=1200 1200w, ${src}?auto=compress&cs=tinysrgb&w=1600 1600w`}
 				sizes="(width <= 425px) 425px, (width <= 768px) 384px, (width <= 1440px) 240px, (width <= 2560) 215px"
-				loading="eager"
 			/>
 		</PhotoLink>
 	);
