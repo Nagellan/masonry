@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router';
 
 import api from '@/api';
 import type { Photo as PhotoType } from '@/api/types';
 
+import { Column } from './Column';
 import { useColumns } from './useColumns';
 import { useLoadOnScroll } from './useLoadOnScroll';
 
@@ -16,42 +16,6 @@ const Wrapper = styled.main`
 	// adds scrollbar for the case when photos don't overflow the screen space
 	// with scrollbar we can trigger scroll event which triggers more photos loading
 	min-height: calc(100vh + 20px);
-`;
-
-const Column = styled.div`
-	display: flex;
-	flex-direction: column;
-	flex-basis: 100%;
-	flex-grow: 1;
-	gap: 1px;
-`;
-
-const Photo = styled.img`
-	width: 100%;
-	cursor: pointer;
-
-	box-shadow:
-		rgba(50, 50, 93, 0.25) 0px 0px 0px 0px,
-		rgba(0, 0, 0, 0.3) 0px 0px 0px 0px;
-	border-radius: 6px;
-
-	transition:
-		transform 0.2s ease-in-out,
-		box-shadow 0.2s ease-in-out,
-		border-radius 0.2s ease-in-out;
-
-	&:hover,
-	&:focus {
-		transform: scale(1.1);
-		box-shadow:
-			rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
-			rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
-		border-radius: 12px;
-	}
-`;
-
-const PhotoLink = styled(Link)`
-	display: flex;
 `;
 
 export const Content = () => {
@@ -74,34 +38,40 @@ export const Content = () => {
 		});
 	}, [page, onLoaded]);
 
+	const getTabIndex = useCallback(
+		(photoIndex: number, columnIndex: number) => {
+			// serve 3 indexes for links in a footer
+			return 4 + photoIndex * columns + columnIndex;
+		},
+		[columns],
+	);
+
+	const photosByColumns = useMemo(
+		() =>
+			Array.from({ length: columns }, (_, columnIndex) =>
+				photos.filter(
+					(_photo, photoIndex) =>
+						photoIndex % columns === columnIndex,
+				),
+			),
+		[photos, columns],
+	);
+
+	if (photos.length === 0) {
+		return '...';
+	}
+
 	return (
 		<Wrapper ref={wrapperRef}>
-			{Array.from({ length: columns }, (_, columnIndex) => (
-				<Column key={columnIndex}>
-					{photos
-						.filter(
-							(_photo, photoIndex) =>
-								photoIndex % columns === columnIndex,
-						)
-						.map((photo, photoIndex) => (
-							<PhotoLink
-								to={`/photo/${photo.id}`}
-								key={photo.id}
-								tabIndex={
-									// serve 3 indexes for links in a footer
-									4 + photoIndex * columns + columnIndex
-								}
-							>
-								<Photo
-									src={photo.src.original}
-									alt={photo.alt}
-									srcSet={`${photo.src.original}?auto=compress&cs=tinysrgb&w=150&loading=lazy 150w, ${photo.src.original}?auto=compress&cs=tinysrgb&w=300&loading=lazy 300w, ${photo.src.original}?auto=compress&cs=tinysrgb&w=400&loading=lazy 400w, ${photo.src.original}?auto=compress&cs=tinysrgb&w=600&loading=lazy 600w, ${photo.src.original}?auto=compress&cs=tinysrgb&w=800&loading=lazy 800w, ${photo.src.original}?auto=compress&cs=tinysrgb&w=1200&loading=lazy 1200w, ${photo.src.original}?auto=compress&cs=tinysrgb&w=1600&loading=lazy 1600w`}
-									sizes="(width <= 425px) 425px, (width <= 768px) 384px, (width <= 1440px) 240px, (width <= 2560) 215px"
-									loading="lazy"
-								/>
-							</PhotoLink>
-						))}
-				</Column>
+			{photosByColumns.map((columnPhotos, columnIndex) => (
+				<Column
+					key={columnIndex}
+					gap={1}
+					photos={columnPhotos}
+					getTabIndex={(photoIndex) =>
+						getTabIndex(photoIndex, columnIndex)
+					}
+				/>
 			))}
 		</Wrapper>
 	);
