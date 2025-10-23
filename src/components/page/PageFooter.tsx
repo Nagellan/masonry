@@ -15,7 +15,7 @@ const Footer = styled.footer`
 	flex-wrap: wrap;
 	gap: 4px;
 
-	z-index: 1;
+	z-index: 2;
 `;
 
 const Bubble = styled(UIBubble)`

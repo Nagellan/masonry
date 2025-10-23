@@ -12,6 +12,7 @@ const Wrapper = styled.main`
 	display: flex;
 	flex-direction: row;
 	gap: 1px;
+	padding: 1px;
 
 	// adds scrollbar for the case when photos don't overflow the screen space
 	// with scrollbar we can trigger scroll event which triggers more photos loading

@@ -16,7 +16,7 @@ const Header = styled.header`
 	flex-wrap: wrap;
 	gap: 4px;
 
-	z-index: 1;
+	z-index: 2;
 `;
 
 const Actions = styled(Bubble)`

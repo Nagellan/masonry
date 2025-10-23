@@ -1,15 +1,18 @@
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 import type { Photo as PhotoType } from '@/api/types';
 
 import { Photo } from './Photo';
 
-const Wrapper = styled.div<{ $gap: number }>`
+const Wrapper = styled.div<{ $gap: number; $height: number }>`
 	display: flex;
 	flex-direction: column;
 	flex-basis: 100%;
 	flex-grow: 1;
 	gap: ${(props) => props.$gap}px;
+	position: relative;
+	height: ${(props) => props.$height}px;
 `;
 
 type Props = {
@@ -19,15 +22,82 @@ type Props = {
 };
 
 export const Column = ({ photos, gap, getTabIndex }: Props) => {
+	const ref = useRef<HTMLDivElement>(null);
+
+	const [photoHeights, setPhotoHeights] = useState<Record<string, number>>(
+		{},
+	);
+	const onPhotoLoad = useCallback((id: number, height: number) => {
+		setPhotoHeights((prev) =>
+			prev[id] === undefined ? { ...prev, [id]: height } : prev,
+		);
+	}, []);
+
+	const [scroll, setScroll] = useState<number>(0);
+	useEffect(() => {
+		const onScroll = () => {
+			setScroll(window.scrollY);
+		};
+
+		window.addEventListener('scroll', onScroll);
+
+		return () => {
+			window.removeEventListener('scroll', onScroll);
+		};
+	}, []);
+
+	const [wrapperHeight, photoPositions] = useMemo(() => {
+		const topPositions: Record<string, { top: number; bottom: number }> =
+			{};
+		let totalHeight = 0;
+
+		for (const photo of photos) {
+			if (!(photo.id in photoHeights)) continue;
+			const imgHeight = photoHeights[photo.id];
+			topPositions[photo.id] = {
+				top: totalHeight,
+				bottom: totalHeight + imgHeight,
+			};
+			totalHeight += gap;
+			totalHeight += imgHeight;
+		}
+
+		return [totalHeight, topPositions];
+	}, [photos, photoHeights, gap]);
+
+	const prevPhotosCount = useRef<number>(0);
+	const visible = useMemo(() => {
+		if (photos.length > prevPhotosCount.current) {
+			prevPhotosCount.current = photos.length;
+			return photos;
+		}
+
+		const result = [];
+
+		for (const photo of photos) {
+			if (!(photo.id in photoPositions)) continue;
+			if (
+				photoPositions[photo.id].bottom > scroll &&
+				photoPositions[photo.id].top < scroll + window.innerHeight
+			) {
+				result.push(photo);
+			}
+		}
+
+		return result;
+	}, [photos, photoPositions, scroll]);
+
 	return (
-		<Wrapper $gap={gap}>
-			{photos.map((photo, photoIndex) => (
+		<Wrapper $gap={gap} $height={wrapperHeight} ref={ref}>
+			{visible.map((photo, photoIndex) => (
 				<Photo
 					key={photo.id}
 					id={photo.id}
 					src={photo.src.original}
 					alt={photo.alt}
 					tabIndex={getTabIndex(photoIndex)}
+					onLoad={onPhotoLoad}
+					top={photoPositions[photo.id]?.top}
 				/>
 			))}
 		</Wrapper>
