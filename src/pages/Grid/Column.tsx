@@ -53,7 +53,9 @@ export const Column = ({ photos, gap, scroll, renderItem }: Props) => {
 		let totalHeight = 0;
 
 		for (const photo of photos) {
-			if (!(photo.id in photoHeights)) continue;
+			if (!(photo.id in photoHeights) || photoHeights[photo.id] === 0) {
+				break;
+			}
 			const imgHeight = photoHeights[photo.id];
 			topPositions[photo.id] = {
 				top: totalHeight,

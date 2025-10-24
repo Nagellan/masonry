@@ -69,8 +69,9 @@ export const Photo = memo(
 			if (!img) return;
 
 			const resizeObserver = new ResizeObserver(([entry]) => {
-				if (entry.contentRect.height > 0)
-					onResize(id, entry.contentRect.height);
+				if (entry.target.clientHeight > 0) {
+					onResize(id, entry.target.clientHeight);
+				}
 			});
 
 			resizeObserver.observe(img);
