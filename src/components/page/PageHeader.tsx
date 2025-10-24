@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { ReactNode } from 'react';
 import styled from 'styled-components';
 
@@ -38,7 +39,7 @@ type Props = {
 	right?: ReactNode;
 };
 
-export const PageHeader = ({ left, title, right }: Props) => {
+export const PageHeader = memo(({ left, title, right }: Props) => {
 	return (
 		<Header>
 			{left ? <Actions>{left}</Actions> : <div />}
@@ -46,4 +47,4 @@ export const PageHeader = ({ left, title, right }: Props) => {
 			{right ? <Actions>{right}</Actions> : <div />}
 		</Header>
 	);
-};
+});

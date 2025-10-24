@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import styled from 'styled-components';
 
 import { Bubble as UIBubble } from '@/components/ui/Bubble';
@@ -22,7 +23,7 @@ const Bubble = styled(UIBubble)`
 	font-size: 14px;
 `;
 
-export const PageFooter = () => {
+export const PageFooter = memo(() => {
 	return (
 		<Footer>
 			<Bubble>
@@ -47,4 +48,4 @@ export const PageFooter = () => {
 			</Bubble>
 		</Footer>
 	);
-};
+});

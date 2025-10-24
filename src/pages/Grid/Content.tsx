@@ -1,13 +1,11 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useRef, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 
-import api from '@/api';
-import type { Photo as PhotoType } from '@/api/types';
-import { PageLoading } from '@/components/page/PageLoading';
+import type { Photo } from '@/api/types';
 
 import { Column } from './Column';
 import { useColumns } from './useColumns';
-import { useLoadOnScroll } from './useLoadOnScroll';
+import { useOnScrollEnd } from './useOnScrollEnd';
 
 const Wrapper = styled.main`
 	display: flex;
@@ -20,25 +18,17 @@ const Wrapper = styled.main`
 	min-height: calc(100vh + 20px);
 `;
 
-export const Content = () => {
-	const wrapperRef = useRef<HTMLElement>(null);
+type Props = {
+	photos: Photo[];
+	onScrollEnd: () => void;
+};
 
-	const [page, setPage] = useState<number>(1);
-	const [photos, setPhotos] = useState<PhotoType[]>([]);
+export const Content = ({ photos, onScrollEnd }: Props) => {
+	const ref = useRef<HTMLElement>(null);
+
+	useOnScrollEnd(ref, onScrollEnd);
+
 	const columns = useColumns();
-
-	const onScrollEnd = useCallback(() => {
-		setPage((prev) => prev + 1);
-	}, []);
-
-	const onLoaded = useLoadOnScroll(wrapperRef, onScrollEnd);
-
-	useEffect(() => {
-		api.getPhotos(page, 80).then((response) => {
-			setPhotos((prevPhotos) => [...prevPhotos, ...response.photos]);
-			onLoaded();
-		});
-	}, [page, onLoaded]);
 
 	const getTabIndex = useCallback(
 		(photoIndex: number, columnIndex: number) => {
@@ -59,12 +49,8 @@ export const Content = () => {
 		[photos, columns],
 	);
 
-	if (photos.length === 0) {
-		return <PageLoading />;
-	}
-
 	return (
-		<Wrapper ref={wrapperRef}>
+		<Wrapper ref={ref}>
 			{photosByColumns.map((columnPhotos, columnIndex) => (
 				<Column
 					key={columnIndex}
