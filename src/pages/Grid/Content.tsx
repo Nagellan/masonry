@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import api from '@/api';
 import type { Photo as PhotoType } from '@/api/types';
+import { PageLoading } from '@/components/page/PageLoading';
 
 import { Column } from './Column';
 import { useColumns } from './useColumns';
@@ -59,7 +60,7 @@ export const Content = () => {
 	);
 
 	if (photos.length === 0) {
-		return '...';
+		return <PageLoading />;
 	}
 
 	return (
