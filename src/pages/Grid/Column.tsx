@@ -5,14 +5,17 @@ import type { Photo as PhotoType } from '@/api/types';
 
 import { Photo } from './Photo';
 
-const Wrapper = styled.div<{ $gap: number; $height: number }>`
+const Wrapper = styled.div.attrs<{ $gap: number; $height: number }>(
+	(props) => ({
+		style: { height: `${props.$height}px` },
+	}),
+)`
 	display: flex;
 	flex-direction: column;
 	flex-basis: 100%;
 	flex-grow: 1;
 	gap: ${(props) => props.$gap}px;
 	position: relative;
-	height: ${(props) => props.$height}px;
 `;
 
 type Props = {
@@ -65,10 +68,8 @@ export const Column = ({ photos, gap, getTabIndex }: Props) => {
 		return [totalHeight, topPositions];
 	}, [photos, photoHeights, gap]);
 
-	const prevPhotosCount = useRef<number>(0);
 	const visible = useMemo(() => {
-		if (photos.length > prevPhotosCount.current) {
-			prevPhotosCount.current = photos.length;
+		if (Object.keys(photoPositions).length !== photos.length) {
 			return photos;
 		}
 
@@ -97,7 +98,7 @@ export const Column = ({ photos, gap, getTabIndex }: Props) => {
 					alt={photo.alt}
 					tabIndex={getTabIndex(photoIndex)}
 					onLoad={onPhotoLoad}
-					top={photoPositions[photo.id]?.top}
+					top={photoPositions[photo.id]?.top ?? 0}
 				/>
 			))}
 		</Wrapper>

@@ -2,10 +2,11 @@ import { memo, useRef, useLayoutEffect } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router';
 
-const PhotoLink = styled(Link)<{ $top: number }>`
+const PhotoLink = styled(Link).attrs<{ $top: number }>((props) => ({
+	style: { top: `${props.$top}px` },
+}))`
 	display: flex;
 	position: absolute;
-	top: ${(props) => props.$top ?? 0}px;
 `;
 
 const Container = styled.img`
