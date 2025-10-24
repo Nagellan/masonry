@@ -7,23 +7,25 @@ export const useOnScrollEnd = (
 	threshold: number | (() => number) = 0,
 ) => {
 	useEffect(() => {
+		const element = ref.current;
+		if (!element) return;
+
 		const onScroll = () => {
-			if (!ref.current) return;
 			const numericThreshold =
 				typeof threshold === 'function' ? threshold() : threshold;
 
 			if (
-				window.scrollY + window.innerHeight >=
-				ref.current.scrollHeight - numericThreshold
+				element.scrollTop + element.clientHeight >=
+				element.scrollHeight - numericThreshold
 			) {
 				onEnd();
 			}
 		};
 
-		window.addEventListener('scroll', onScroll);
+		element.addEventListener('scroll', onScroll);
 
 		return () => {
-			window.removeEventListener('scroll', onScroll);
+			element.removeEventListener('scroll', onScroll);
 		};
 	}, [ref, onEnd, threshold]);
 };

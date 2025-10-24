@@ -1,24 +1,20 @@
-import { useRef, useMemo, useCallback } from 'react';
+import { useMemo, useCallback } from 'react';
 import styled from 'styled-components';
 
+import { Masonry as UIMasonry } from '@/components/Masonry';
+import type { RenderComponent } from '@/components/Masonry';
 import type { Photo as PhotoType } from '@/api/types';
-import { useScrollPosition } from '@/hooks/useScrollPosition';
-import { useOnScrollEnd } from '@/hooks/useOnScrollEnd';
 
-import { Column } from './Column';
 import { Photo } from './Photo';
 import { useColumns } from './useColumns';
 
-const Wrapper = styled.main`
-	display: flex;
-	flex-direction: row;
-	gap: 1px;
+const Masonry = styled(UIMasonry)`
 	padding: 1px;
 
 	// adds scrollbar for the case when photos don't overflow the screen space
 	// with scrollbar we can trigger scroll event which triggers more photos loading
 	min-height: calc(100vh + 20px);
-`;
+` as typeof UIMasonry; // avoid losing generic
 
 type Props = {
 	photos: PhotoType[];
@@ -26,56 +22,36 @@ type Props = {
 };
 
 export const Content = ({ photos, onScrollEnd }: Props) => {
-	const ref = useRef<HTMLElement>(null);
-
-	const scroll = useScrollPosition();
-
-	useOnScrollEnd(
-		ref,
-		onScrollEnd,
-		useCallback(() => window.innerHeight, []),
-	);
-
 	const columns = useColumns();
 
-	const photosByColumns = useMemo(
-		() =>
-			Array.from({ length: columns }, (_, columnIndex) =>
-				photos.filter(
-					(_photo, photoIndex) =>
-						photoIndex % columns === columnIndex,
-				),
-			),
-		[photos, columns],
+	const photoIds = useMemo(() => photos.map((photo) => photo.id), [photos]);
+
+	const renderComponent = useCallback<RenderComponent<PhotoType['id']>>(
+		({ key, index, top, onLoad, onResize }) => {
+			const photo = photos[index];
+			return (
+				<Photo
+					key={key}
+					id={photo.id}
+					src={photo.src.original}
+					alt={photo.alt}
+					// serve 3 indexes for links in a footer
+					tabIndex={4 + index}
+					onLoad={onLoad}
+					onResize={onResize}
+					top={top}
+				/>
+			);
+		},
+		[photos],
 	);
 
-	const getTabIndex = (photoIndex: number, columnIndex: number) => {
-		// serve 3 indexes for links in a footer
-		return 4 + photoIndex * columns + columnIndex;
-	};
-
 	return (
-		<Wrapper ref={ref}>
-			{photosByColumns.map((columnPhotos, columnIndex) => (
-				<Column
-					key={columnIndex}
-					gap={1}
-					scroll={scroll}
-					photos={columnPhotos}
-					renderItem={({ photo, index, top, onLoad, onResize }) => (
-						<Photo
-							key={photo.id}
-							id={photo.id}
-							src={photo.src.original}
-							alt={photo.alt}
-							tabIndex={getTabIndex(index, columnIndex)}
-							onLoad={onLoad}
-							onResize={onResize}
-							top={top}
-						/>
-					)}
-				/>
-			))}
-		</Wrapper>
+		<Masonry
+			keys={photoIds}
+			renderComponent={renderComponent}
+			onScrollEnd={onScrollEnd}
+			columns={columns}
+		/>
 	);
 };
