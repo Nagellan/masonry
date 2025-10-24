@@ -1,9 +1,8 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import type { JSX } from 'react';
 import styled from 'styled-components';
 
-import type { Photo as PhotoType } from '@/api/types';
-
-import { Photo } from './Photo';
+import type { Photo } from '@/api/types';
 
 const Wrapper = styled.div.attrs<{ $gap: number; $height: number }>(
 	(props) => ({
@@ -19,12 +18,18 @@ const Wrapper = styled.div.attrs<{ $gap: number; $height: number }>(
 `;
 
 type Props = {
-	photos: PhotoType[];
+	photos: Photo[];
 	gap: number;
-	getTabIndex: (photoIndex: number) => number;
+	renderItem: (props: {
+		photo: Photo;
+		index: number;
+		top: number | undefined;
+		onLoad: (id: number, height: number) => void;
+		onResize: (id: number, height: number) => void;
+	}) => JSX.Element;
 };
 
-export const Column = ({ photos, gap, getTabIndex }: Props) => {
+export const Column = ({ photos, gap, renderItem }: Props) => {
 	const ref = useRef<HTMLDivElement>(null);
 
 	const [photoHeights, setPhotoHeights] = useState<Record<string, number>>(
@@ -95,18 +100,15 @@ export const Column = ({ photos, gap, getTabIndex }: Props) => {
 
 	return (
 		<Wrapper $gap={gap} $height={wrapperHeight} ref={ref}>
-			{visible.map((photo, photoIndex) => (
-				<Photo
-					key={photo.id}
-					id={photo.id}
-					src={photo.src.original}
-					alt={photo.alt}
-					tabIndex={getTabIndex(photoIndex)}
-					onLoad={onPhotoLoad}
-					onResize={onPhotoResize}
-					top={photoPositions[photo.id]?.top}
-				/>
-			))}
+			{visible.map((photo, photoIndex) =>
+				renderItem({
+					photo,
+					index: photoIndex,
+					top: photoPositions[photo.id]?.top,
+					onLoad: onPhotoLoad,
+					onResize: onPhotoResize,
+				}),
+			)}
 		</Wrapper>
 	);
 };

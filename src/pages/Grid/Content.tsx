@@ -1,9 +1,10 @@
 import { useRef, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 
-import type { Photo } from '@/api/types';
+import type { Photo as PhotoType } from '@/api/types';
 
 import { Column } from './Column';
+import { Photo } from './Photo';
 import { useColumns } from './useColumns';
 import { useOnScrollEnd } from './useOnScrollEnd';
 
@@ -19,7 +20,7 @@ const Wrapper = styled.main`
 `;
 
 type Props = {
-	photos: Photo[];
+	photos: PhotoType[];
 	onScrollEnd: () => void;
 };
 
@@ -56,9 +57,18 @@ export const Content = ({ photos, onScrollEnd }: Props) => {
 					key={columnIndex}
 					gap={1}
 					photos={columnPhotos}
-					getTabIndex={(photoIndex) =>
-						getTabIndex(photoIndex, columnIndex)
-					}
+					renderItem={({ photo, index, top, onLoad, onResize }) => (
+						<Photo
+							key={photo.id}
+							id={photo.id}
+							src={photo.src.original}
+							alt={photo.alt}
+							tabIndex={getTabIndex(index, columnIndex)}
+							onLoad={onLoad}
+							onResize={onResize}
+							top={top}
+						/>
+					)}
 				/>
 			))}
 		</Wrapper>

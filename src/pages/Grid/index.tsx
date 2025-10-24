@@ -16,7 +16,6 @@ export const Grid = () => {
 
 	useEffect(() => {
 		setLoading(true);
-		console.log('LOADING');
 		api.getPhotos(page, 80).then((response) => {
 			setPhotos((prevPhotos) => [...prevPhotos, ...response.photos]);
 			if (page === 1) {
