@@ -35,6 +35,11 @@ export const Column = ({ photos, gap, getTabIndex }: Props) => {
 			prev[id] === undefined ? { ...prev, [id]: height } : prev,
 		);
 	}, []);
+	const onPhotoResize = useCallback((id: number, height: number) => {
+		setPhotoHeights((prev) =>
+			prev[id] === height ? prev : { ...prev, [id]: height },
+		);
+	}, []);
 
 	const [scroll, setScroll] = useState<number>(0);
 	useEffect(() => {
@@ -98,6 +103,7 @@ export const Column = ({ photos, gap, getTabIndex }: Props) => {
 					alt={photo.alt}
 					tabIndex={getTabIndex(photoIndex)}
 					onLoad={onPhotoLoad}
+					onResize={onPhotoResize}
 					top={photoPositions[photo.id]?.top ?? 0}
 				/>
 			))}
