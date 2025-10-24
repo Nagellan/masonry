@@ -2,11 +2,14 @@ import { memo, useRef, useLayoutEffect, useEffect } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router';
 
-const PhotoLink = styled(Link).attrs<{ $top: number }>((props) => ({
-	style: { top: `${props.$top}px` },
-}))`
+const PhotoLink = styled(Link).attrs<{ $top: number; $hidden: boolean }>(
+	(props) => ({
+		style: { top: `${props.$top}px` },
+	}),
+)`
 	display: flex;
 	position: absolute;
+	visibility: ${(props) => (props.$hidden ? 'hidden' : 'visible')};
 `;
 
 const Container = styled.img`
@@ -31,7 +34,7 @@ type Props = {
 	src: string;
 	alt?: string;
 	tabIndex: number;
-	top: number;
+	top: number | undefined;
 	onLoad: (id: number, height: number) => void;
 	onResize: (id: number, height: number) => void;
 };
@@ -78,13 +81,19 @@ export const Photo = memo(
 		}, [id, onResize]);
 
 		return (
-			<PhotoLink to={`/photo/${id}`} tabIndex={tabIndex} $top={top}>
+			<PhotoLink
+				to={`/photo/${id}`}
+				tabIndex={tabIndex}
+				$top={top ?? 0}
+				$hidden={top === undefined}
+			>
 				<Container
 					ref={ref}
 					src={src}
 					alt={alt}
 					srcSet={`${src}?auto=compress&cs=tinysrgb&w=150 150w, ${src}?auto=compress&cs=tinysrgb&w=300 300w, ${src}?auto=compress&cs=tinysrgb&w=400 400w, ${src}?auto=compress&cs=tinysrgb&w=600 600w, ${src}?auto=compress&cs=tinysrgb&w=800 800w, ${src}?auto=compress&cs=tinysrgb&w=1200 1200w, ${src}?auto=compress&cs=tinysrgb&w=1600 1600w`}
 					sizes="(width <= 425px) 425px, (width <= 768px) 384px, (width <= 1440px) 240px, (width <= 2560) 215px"
+					fetchPriority="high"
 				/>
 			</PhotoLink>
 		);

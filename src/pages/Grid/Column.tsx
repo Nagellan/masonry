@@ -104,7 +104,7 @@ export const Column = ({ photos, gap, getTabIndex }: Props) => {
 					tabIndex={getTabIndex(photoIndex)}
 					onLoad={onPhotoLoad}
 					onResize={onPhotoResize}
-					top={photoPositions[photo.id]?.top ?? 0}
+					top={photoPositions[photo.id]?.top}
 				/>
 			))}
 		</Wrapper>
