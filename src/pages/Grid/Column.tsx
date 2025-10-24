@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import type { JSX } from 'react';
 import styled from 'styled-components';
 
@@ -20,6 +20,7 @@ const Wrapper = styled.div.attrs<{ $gap: number; $height: number }>(
 type Props = {
 	photos: Photo[];
 	gap: number;
+	scroll: number;
 	renderItem: (props: {
 		photo: Photo;
 		index: number;
@@ -29,7 +30,7 @@ type Props = {
 	}) => JSX.Element;
 };
 
-export const Column = ({ photos, gap, renderItem }: Props) => {
+export const Column = ({ photos, gap, scroll, renderItem }: Props) => {
 	const ref = useRef<HTMLDivElement>(null);
 
 	const [photoHeights, setPhotoHeights] = useState<Record<string, number>>(
@@ -44,19 +45,6 @@ export const Column = ({ photos, gap, renderItem }: Props) => {
 		setPhotoHeights((prev) =>
 			prev[id] === height ? prev : { ...prev, [id]: height },
 		);
-	}, []);
-
-	const [scroll, setScroll] = useState<number>(0);
-	useEffect(() => {
-		const onScroll = () => {
-			setScroll(window.scrollY);
-		};
-
-		window.addEventListener('scroll', onScroll);
-
-		return () => {
-			window.removeEventListener('scroll', onScroll);
-		};
 	}, []);
 
 	const [wrapperHeight, photoPositions] = useMemo(() => {
