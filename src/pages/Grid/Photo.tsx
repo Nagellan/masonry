@@ -86,6 +86,7 @@ export const Photo = memo(
 				to={`/photo/${id}`}
 				tabIndex={tabIndex}
 				$top={top ?? 0}
+				// while position is not yet calculated, hide photo to avoid shifts & blinks
 				$hidden={top === undefined}
 			>
 				<Container
@@ -93,7 +94,7 @@ export const Photo = memo(
 					src={src}
 					alt={alt}
 					srcSet={`${src}?auto=compress&cs=tinysrgb&w=150 150w, ${src}?auto=compress&cs=tinysrgb&w=300 300w, ${src}?auto=compress&cs=tinysrgb&w=400 400w, ${src}?auto=compress&cs=tinysrgb&w=600 600w, ${src}?auto=compress&cs=tinysrgb&w=800 800w, ${src}?auto=compress&cs=tinysrgb&w=1200 1200w, ${src}?auto=compress&cs=tinysrgb&w=1600 1600w`}
-					sizes="(width <= 425px) 425px, (width <= 768px) 384px, (width <= 1440px) 240px, (width <= 2560) 215px"
+					sizes="(width <= 425px) 425px, (width <= 768px) 384px, (width <= 1440px) 240px, (width <= 2560px) 215px"
 					fetchPriority="high"
 				/>
 			</PhotoLink>

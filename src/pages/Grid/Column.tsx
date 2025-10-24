@@ -69,6 +69,7 @@ export const Column = ({ photos, gap, scroll, renderItem }: Props) => {
 	}, [photos, photoHeights, gap]);
 
 	const visible = useMemo(() => {
+		// render all photos untill all their positions are calculated
 		if (Object.keys(photoPositions).length !== photos.length) {
 			return photos;
 		}
@@ -76,7 +77,6 @@ export const Column = ({ photos, gap, scroll, renderItem }: Props) => {
 		const result = [];
 
 		for (const photo of photos) {
-			if (!(photo.id in photoPositions)) continue;
 			if (
 				photoPositions[photo.id].bottom > scroll &&
 				photoPositions[photo.id].top < scroll + window.innerHeight

@@ -1,24 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import type { RefObject } from 'react';
 
-export const useScroll = (
+export const useOnScrollEnd = (
 	ref: RefObject<HTMLElement | null>,
-	onScrollEnd: () => void,
+	onEnd: () => void,
+	threshold: number | (() => number) = 0,
 ) => {
-	const [scroll, setScroll] = useState<number>(0);
-
 	useEffect(() => {
 		const onScroll = () => {
-			setScroll(window.scrollY);
-
 			if (!ref.current) return;
+			const numericThreshold =
+				typeof threshold === 'function' ? threshold() : threshold;
 
-			// one screen height before scroll end
 			if (
 				window.scrollY + window.innerHeight >=
-				ref.current.scrollHeight - window.innerHeight
+				ref.current.scrollHeight - numericThreshold
 			) {
-				onScrollEnd();
+				onEnd();
 			}
 		};
 
@@ -27,7 +25,5 @@ export const useScroll = (
 		return () => {
 			window.removeEventListener('scroll', onScroll);
 		};
-	}, [ref, onScrollEnd]);
-
-	return scroll;
+	}, [ref, onEnd, threshold]);
 };

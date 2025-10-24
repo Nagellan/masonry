@@ -1,12 +1,13 @@
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useCallback } from 'react';
 import styled from 'styled-components';
 
 import type { Photo as PhotoType } from '@/api/types';
+import { useScrollPosition } from '@/hooks/useScrollPosition';
+import { useOnScrollEnd } from '@/hooks/useOnScrollEnd';
 
 import { Column } from './Column';
 import { Photo } from './Photo';
 import { useColumns } from './useColumns';
-import { useScroll } from './useScroll';
 
 const Wrapper = styled.main`
 	display: flex;
@@ -27,7 +28,13 @@ type Props = {
 export const Content = ({ photos, onScrollEnd }: Props) => {
 	const ref = useRef<HTMLElement>(null);
 
-	const scroll = useScroll(ref, onScrollEnd);
+	const scroll = useScrollPosition();
+
+	useOnScrollEnd(
+		ref,
+		onScrollEnd,
+		useCallback(() => window.innerHeight, []),
+	);
 
 	const columns = useColumns();
 
