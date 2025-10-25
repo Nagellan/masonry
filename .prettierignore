@@ -2,3 +2,4 @@
 .prettierignore
 .gitignore
 .husky
+public/robots.txt
