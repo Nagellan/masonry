@@ -29,6 +29,7 @@ type Props<Id extends SupportedId> = {
 	renderComponent: RenderComponent<Id>;
 	onScrollEnd: () => void;
 	columns: number;
+	threshold?: number;
 	gapX?: number;
 	gapY?: number;
 	height?: number | `${number}%`;
@@ -40,6 +41,7 @@ const MasonryWithoutMemo = <Id extends SupportedId>({
 	renderComponent,
 	onScrollEnd,
 	columns,
+	threshold = 400,
 	gapX = 1,
 	gapY = 1,
 	height = '100%',
@@ -78,6 +80,7 @@ const MasonryWithoutMemo = <Id extends SupportedId>({
 					gap={gapY}
 					scroll={scroll}
 					ids={ids}
+					threshold={threshold}
 					viewportHeight={viewportHeight}
 					renderComponent={(props) =>
 						renderComponent({

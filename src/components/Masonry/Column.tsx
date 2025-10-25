@@ -22,6 +22,7 @@ type Props<Id extends SupportedId> = {
 	gap: number;
 	scroll: number;
 	viewportHeight: number;
+	threshold: number;
 	renderComponent: RenderComponent<Id>;
 };
 
@@ -30,6 +31,7 @@ export const Column = <Id extends SupportedId>({
 	gap,
 	scroll,
 	viewportHeight,
+	threshold,
 	renderComponent,
 }: Props<Id>) => {
 	const ref = useRef<HTMLDivElement>(null);
@@ -109,15 +111,15 @@ export const Column = <Id extends SupportedId>({
 	useEffect(() => {
 		if (ids.length !== positions.length) return;
 		let index = 0;
-		while (positions[index] + heights[index] < scroll) {
+		while (positions[index] + heights[index] < scroll - threshold) {
 			index++;
 		}
 		setVisibleStart(index);
-		while (positions[index] < scroll + viewportHeight) {
+		while (positions[index] < scroll + viewportHeight + threshold) {
 			index++;
 		}
 		setVisibleEnd(index - 1);
-	}, [scroll, ids.length, positions, heights, viewportHeight]);
+	}, [scroll, ids.length, positions, heights, viewportHeight, threshold]);
 
 	return (
 		<Wrapper $gap={gap} $height={wrapperHeight} ref={ref}>
