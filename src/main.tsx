@@ -20,7 +20,7 @@ const router = createBrowserRouter(
 			Component: Grid,
 		},
 		{
-			path: '/photo/:photoId',
+			path: 'photo/:photoId',
 			Component: Photo,
 		},
 		{
