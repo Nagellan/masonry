@@ -103,7 +103,7 @@ export const Column = <Id extends SupportedId>({
 			totalHeight += heights[i];
 		}
 		setPositions(newPositions);
-	}, [ids, heights, gap]);
+	}, [ids.length, heights, gap]);
 
 	// recalculate visibility range when all positions are present
 	useEffect(() => {
@@ -117,7 +117,7 @@ export const Column = <Id extends SupportedId>({
 			index++;
 		}
 		setVisibleEnd(index - 1);
-	}, [scroll, ids, positions, heights, viewportHeight]);
+	}, [scroll, ids.length, positions, heights, viewportHeight]);
 
 	return (
 		<Wrapper $gap={gap} $height={wrapperHeight} ref={ref}>
