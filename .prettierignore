@@ -2,4 +2,5 @@
 .prettierignore
 .gitignore
 .husky
+.nvmrc
 public/robots.txt
