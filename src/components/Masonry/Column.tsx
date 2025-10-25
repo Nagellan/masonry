@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useRef } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import styled from 'styled-components';
 
 import type { SupportedId, RenderComponent } from './types';
@@ -34,65 +34,101 @@ export const Column = <Id extends SupportedId>({
 }: Props<Id>) => {
 	const ref = useRef<HTMLDivElement>(null);
 
-	const [heights, setHeights] = useState({} as Record<Id, number>);
-	const onComponentResize = useCallback((id: Id, height: number) => {
-		setHeights((prev) =>
-			prev[id] === height || height === 0
-				? prev
-				: { ...prev, [id]: height },
-		);
+	const [visibleStart, setVisibleStart] = useState(0);
+	const [visibleEnd, setVisibleEnd] = useState(ids.length - 1);
+	const [heights, setHeights] = useState<number[]>([]);
+	const [positions, setPositions] = useState<number[]>([]);
+	const [, setPrevIds] = useState(ids);
+
+	// total heights of all elements + gaps between them
+	const wrapperHeight = useMemo(
+		() =>
+			heights.reduce((prev, height) => prev + height, 0) +
+			(heights.filter(Boolean).length - 1) * gap,
+		[heights, gap],
+	);
+
+	// update heights array on each component resize
+	const onComponentResize = useCallback((index: number, height: number) => {
+		setHeights((prevHeights) => {
+			// ignoring height=0 prevents cumulative layout shifts
+			if (height === prevHeights[index] || height === 0) {
+				return prevHeights;
+			}
+			const newHeights = [...prevHeights];
+			newHeights[index] = height;
+			return newHeights;
+		});
 	}, []);
 
-	const [wrapperHeight, componentPositions] = useMemo(() => {
-		const topPositions = {} as Record<Id, { top: number; bottom: number }>;
-		let totalHeight = 0;
-
-		for (const id of ids) {
-			if (!(id in heights) || heights[id] === 0) {
-				break;
+	// listen to ids array updates
+	useEffect(() => {
+		// everything is inside setPrevIds callback to avoid having prevIds as a dependency
+		setPrevIds((prevIds) => {
+			let same = true;
+			for (let i = 0; i < Math.min(prevIds.length, ids.length); i++) {
+				if (prevIds[i] !== ids[i]) {
+					same = false;
+					break;
+				}
 			}
-			const componentHeight = heights[id];
-			topPositions[id] = {
-				top: totalHeight,
-				bottom: totalHeight + componentHeight,
-			};
-			totalHeight += gap;
-			totalHeight += componentHeight;
-		}
+			// if nothing is changed, do nothing
+			if (same && prevIds.length === ids.length) {
+				return prevIds;
+			}
+			// if new ids are just additions/reductions to previous ones, update only diff visibility
+			if (same) {
+				setVisibleEnd(ids.length);
+			}
+			// if new ids are different, reset the whole state, because indexes changed
+			// and we need to recalculate everything from the beginning
+			else {
+				setHeights([]);
+				setPositions([]);
+				setVisibleStart(0);
+				setVisibleEnd(ids.length - 1);
+			}
+			return ids;
+		});
+	}, [ids]);
 
-		return [totalHeight, topPositions];
+	// recalculate and update positions when all heights are present
+	useEffect(() => {
+		if (ids.length !== heights.length) return;
+		let totalHeight = 0;
+		const newPositions = [];
+		for (let i = 0; i < ids.length; i++) {
+			newPositions[i] = totalHeight;
+			totalHeight += gap;
+			totalHeight += heights[i];
+		}
+		setPositions(newPositions);
 	}, [ids, heights, gap]);
 
-	const visible = useMemo<Id[]>(() => {
-		// render all components untill all their positions are calculated
-		if (Object.keys(componentPositions).length !== ids.length) {
-			return ids;
+	// recalculate visibility range when all positions are present
+	useEffect(() => {
+		if (ids.length !== positions.length) return;
+		let index = 0;
+		while (positions[index] + heights[index] < scroll) {
+			index++;
 		}
-
-		const result: Id[] = [];
-
-		for (const id of ids) {
-			if (
-				componentPositions[id].bottom > scroll &&
-				componentPositions[id].top < scroll + viewportHeight
-			) {
-				result.push(id);
-			}
+		setVisibleStart(index);
+		while (positions[index] < scroll + viewportHeight) {
+			index++;
 		}
-
-		return result;
-	}, [ids, componentPositions, viewportHeight, scroll]);
+		setVisibleEnd(index - 1);
+	}, [scroll, ids, positions, heights, viewportHeight]);
 
 	return (
 		<Wrapper $gap={gap} $height={wrapperHeight} ref={ref}>
 			{ids.map((id, index) => {
-				if (visible.includes(id)) {
+				if (index >= visibleStart && index <= visibleEnd) {
 					return (
 						<ColumnItem<Id>
 							key={id}
 							id={id}
 							index={index}
-							top={componentPositions[id]?.top}
+							top={positions[index]}
 							renderComponent={renderComponent}
 							onResize={onComponentResize}
 						/>

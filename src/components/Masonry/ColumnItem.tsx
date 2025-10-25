@@ -8,7 +8,7 @@ type Props<Id extends SupportedId> = {
 	index: number;
 	top: number | undefined;
 	renderComponent: RenderComponent<Id>;
-	onResize: (id: Id, height: number) => void;
+	onResize: (index: number, height: number) => void;
 };
 
 const ColumnItemWithoutMemo = <Id extends SupportedId>({
@@ -22,7 +22,7 @@ const ColumnItemWithoutMemo = <Id extends SupportedId>({
 
 	useHeight(
 		ref,
-		useCallback((height) => onResize(id, height), [id, onResize]),
+		useCallback((height) => onResize(index, height), [index, onResize]),
 	);
 
 	const style = useMemo(
