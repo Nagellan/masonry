@@ -62,6 +62,8 @@ Error boundary is used inside a `Page` component that wraps every page, so we ha
 
 `main.tsx` contains all routing logic as it's small and doesn't really need its own files. Where the entry point is — there is a routing, very evidently.
 
+`tabindex` is set up manually so there is an opportunity to navigate using keyboard tab button.
+
 ## Performance evaluation
 
 Performance was evaluated using Lighthouse on an optimized and minified production build.

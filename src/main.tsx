@@ -13,19 +13,22 @@ if (!root) {
 	throw new Error('There is no root element!');
 }
 
-const router = createBrowserRouter([
-	{
-		index: true,
-		Component: Grid,
-	},
-	{
-		path: '/photo/:photoId',
-		Component: Photo,
-	},
-	{
-		path: '*',
-		Component: NotFound,
-	},
-]);
+const router = createBrowserRouter(
+	[
+		{
+			index: true,
+			Component: Grid,
+		},
+		{
+			path: '/photo/:photoId',
+			Component: Photo,
+		},
+		{
+			path: '*',
+			Component: NotFound,
+		},
+	],
+	{ basename: '/masonry' },
+);
 
 createRoot(root).render(<RouterProvider router={router} />);
