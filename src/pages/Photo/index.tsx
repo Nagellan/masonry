@@ -68,23 +68,23 @@ export const Photo = () => {
 				left={<Button onClick={goBack}>Back</Button>}
 				right={[
 					<FixedSizeButton
-						key="plus"
-						onClick={() =>
-							setWidth((prev) => Math.min(prev + 10, 200))
-						}
-					>
-						+
-					</FixedSizeButton>,
-					<Button key="full" onClick={() => setWidth(100)}>
-						{width}%
-					</Button>,
-					<FixedSizeButton
 						key="minus"
 						onClick={() =>
 							setWidth((prev) => Math.max(prev - 10, 10))
 						}
 					>
 						-
+					</FixedSizeButton>,
+					<Button key="full" onClick={() => setWidth(100)}>
+						{width}%
+					</Button>,
+					<FixedSizeButton
+						key="plus"
+						onClick={() =>
+							setWidth((prev) => Math.min(prev + 10, 200))
+						}
+					>
+						+
 					</FixedSizeButton>,
 				]}
 			/>
