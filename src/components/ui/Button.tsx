@@ -15,8 +15,6 @@ const Wrapper = styled.button`
 	cursor: pointer;
 `;
 
-type Props = ButtonHTMLAttributes<HTMLButtonElement>;
-
-export const Button = memo((props: Props) => {
+export const Button = memo((props: ButtonHTMLAttributes<HTMLButtonElement>) => {
 	return <Wrapper {...props} />;
 });

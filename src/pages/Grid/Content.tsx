@@ -1,4 +1,5 @@
 import { useMemo, useCallback } from 'react';
+import styled from 'styled-components';
 
 import { Masonry } from '@/components/Masonry';
 import type { RenderComponent } from '@/components/Masonry/types';
@@ -6,6 +7,11 @@ import type { Photo as PhotoType } from '@/api/types';
 
 import { Photo } from './Photo';
 import { useColumns } from './useColumns';
+
+const Wrapper = styled.main`
+	height: 100%;
+	width: 100%;
+`;
 
 type Props = {
 	photos: PhotoType[];
@@ -37,11 +43,13 @@ export const Content = ({ photos, onScrollEnd }: Props) => {
 	);
 
 	return (
-		<Masonry
-			ids={photoIds}
-			renderComponent={renderComponent}
-			onScrollEnd={onScrollEnd}
-			columns={columns}
-		/>
+		<Wrapper>
+			<Masonry
+				ids={photoIds}
+				renderComponent={renderComponent}
+				onScrollEnd={onScrollEnd}
+				columns={columns}
+			/>
+		</Wrapper>
 	);
 };

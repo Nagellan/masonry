@@ -42,6 +42,7 @@ export const Photo = memo(({ id, src, alt, tabIndex, style, ref }: Props) => {
 			ref={(el) => {
 				ref.current = el;
 			}}
+			aria-label={`Open details and full-size picture of ${alt}`}
 		>
 			<Container
 				src={src}
