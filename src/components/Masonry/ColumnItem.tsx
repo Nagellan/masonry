@@ -1,5 +1,7 @@
-import { memo, useMemo, useRef, useLayoutEffect } from 'react';
+import { memo, useMemo, useRef, useCallback } from 'react';
+
 import type { SupportedId, RenderComponent } from './types';
+import { useHeight } from '@/hooks/useHeight';
 
 type Props<Id extends SupportedId> = {
 	id: Id;
@@ -18,20 +20,10 @@ const ColumnItemWithoutMemo = <Id extends SupportedId>({
 }: Props<Id>) => {
 	const ref = useRef<HTMLElement>(null);
 
-	useLayoutEffect(() => {
-		const el = ref.current;
-		if (!el) return;
-
-		const resizeObserver = new ResizeObserver(([entry]) => {
-			onResize(id, entry.target.clientHeight);
-		});
-
-		resizeObserver.observe(el);
-
-		return () => {
-			resizeObserver.unobserve(el);
-		};
-	}, [id, onResize]);
+	useHeight(
+		ref,
+		useCallback((height) => onResize(id, height), [id, onResize]),
+	);
 
 	const style = useMemo(
 		() => ({

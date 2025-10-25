@@ -1,8 +1,9 @@
-import { useRef, useMemo, useCallback, memo } from 'react';
+import { useRef, useMemo, memo, useState } from 'react';
 import styled from 'styled-components';
 
 import { useScrollPosition } from '@/hooks/useScrollPosition';
 import { useOnScrollEnd } from '@/hooks/useOnScrollEnd';
+import { useHeight } from '@/hooks/useHeight';
 
 import { Column } from './Column';
 import type { SupportedId, RenderComponent } from './types';
@@ -47,13 +48,19 @@ const MasonryWithoutMemo = <Id extends SupportedId>({
 }: Props<Id>) => {
 	const ref = useRef<HTMLDivElement>(null);
 
+	const [viewportHeight, setViewportHeight] = useState<number>(() =>
+		ref.current ? ref.current.clientHeight : 0,
+	);
+
+	useHeight(ref, setViewportHeight);
+
 	const scroll = useScrollPosition(ref);
 
 	useOnScrollEnd(
 		ref,
 		onScrollEnd,
-		// notify scroll end evnet when scroll is one wrapper height above wrapper scroll end
-		useCallback(() => (ref.current ? ref.current.clientHeight : 200), []),
+		// notify scroll end evnet when scroll is one viewport height above wrapper scroll end
+		viewportHeight,
 	);
 
 	const idsByColumns = useMemo(
@@ -72,6 +79,7 @@ const MasonryWithoutMemo = <Id extends SupportedId>({
 					gap={gapY}
 					scroll={scroll}
 					ids={ids}
+					viewportHeight={viewportHeight}
 					renderComponent={(props) =>
 						renderComponent({
 							...props,

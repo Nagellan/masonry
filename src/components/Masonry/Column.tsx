@@ -21,6 +21,7 @@ type Props<Id extends SupportedId> = {
 	ids: Id[];
 	gap: number;
 	scroll: number;
+	viewportHeight: number;
 	renderComponent: RenderComponent<Id>;
 };
 
@@ -28,6 +29,7 @@ export const Column = <Id extends SupportedId>({
 	ids,
 	gap,
 	scroll,
+	viewportHeight,
 	renderComponent,
 }: Props<Id>) => {
 	const ref = useRef<HTMLDivElement>(null);
@@ -35,7 +37,9 @@ export const Column = <Id extends SupportedId>({
 	const [heights, setHeights] = useState({} as Record<Id, number>);
 	const onComponentResize = useCallback((id: Id, height: number) => {
 		setHeights((prev) =>
-			prev[id] === height ? prev : { ...prev, [id]: height },
+			prev[id] === height || height === 0
+				? prev
+				: { ...prev, [id]: height },
 		);
 	}, []);
 
@@ -70,14 +74,14 @@ export const Column = <Id extends SupportedId>({
 		for (const id of ids) {
 			if (
 				componentPositions[id].bottom > scroll &&
-				componentPositions[id].top < scroll + window.innerHeight
+				componentPositions[id].top < scroll + viewportHeight
 			) {
 				result.push(id);
 			}
 		}
 
 		return result;
-	}, [ids, componentPositions, scroll]);
+	}, [ids, componentPositions, viewportHeight, scroll]);
 
 	return (
 		<Wrapper $gap={gap} $height={wrapperHeight} ref={ref}>
