@@ -1,7 +1,7 @@
 import { memo, useMemo, useRef, useCallback } from 'react';
 
 import type { SupportedId, RenderComponent } from './types';
-import { useHeight } from '@/hooks/useHeight';
+import { useHeight } from './hooks/useHeight';
 
 type Props<Id extends SupportedId> = {
 	id: Id;

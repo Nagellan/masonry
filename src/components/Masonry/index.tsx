@@ -1,12 +1,11 @@
 import { useRef, useMemo, memo, useState } from 'react';
 import styled from 'styled-components';
 
-import { useScrollPosition } from '@/hooks/useScrollPosition';
-import { useOnScrollEnd } from '@/hooks/useOnScrollEnd';
-import { useHeight } from '@/hooks/useHeight';
-
-import { Column } from './Column';
 import type { SupportedId, RenderComponent } from './types';
+import { useScrollPosition } from './hooks/useScrollPosition';
+import { useOnScrollEnd } from './hooks/useOnScrollEnd';
+import { useHeight } from './hooks/useHeight';
+import { Column } from './Column';
 
 const Wrapper = styled.div<{
 	$gap: number;
