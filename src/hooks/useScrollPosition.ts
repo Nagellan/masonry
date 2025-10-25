@@ -4,7 +4,9 @@ import type { RefObject } from 'react';
 export const useScrollPosition = (
 	ref: RefObject<HTMLElement | null>,
 ): number => {
-	const [position, setPosition] = useState<number>(() => window.scrollY);
+	const [position, setPosition] = useState<number>(() =>
+		ref.current ? ref.current.scrollTop : 0,
+	);
 
 	useEffect(() => {
 		const element = ref.current;

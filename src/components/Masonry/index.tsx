@@ -1,11 +1,11 @@
 import { useRef, useMemo, useCallback, memo } from 'react';
-import type { JSX } from 'react';
 import styled from 'styled-components';
 
 import { useScrollPosition } from '@/hooks/useScrollPosition';
 import { useOnScrollEnd } from '@/hooks/useOnScrollEnd';
 
 import { Column } from './Column';
+import type { SupportedId, RenderComponent } from './types';
 
 const Wrapper = styled.div<{
 	$gap: number;
@@ -24,23 +24,9 @@ const Wrapper = styled.div<{
 	overflow: auto;
 `;
 
-export type RenderComponent<Key> = ({
-	key,
-	index,
-	top,
-	onLoad,
-	onResize,
-}: {
-	key: Key;
-	index: number;
-	top: number | undefined;
-	onLoad: (key: Key, height: number) => void;
-	onResize: (key: Key, height: number) => void;
-}) => JSX.Element;
-
-type Props<Key> = {
-	keys: Key[];
-	renderComponent: RenderComponent<Key>;
+type Props<Id extends SupportedId> = {
+	ids: Id[];
+	renderComponent: RenderComponent<Id>;
 	onScrollEnd: () => void;
 	columns: number;
 	gapX?: number;
@@ -49,8 +35,8 @@ type Props<Key> = {
 	width?: number | `${number}%`;
 };
 
-const MasonryWithoutMemo = <Key extends string | number>({
-	keys,
+const MasonryWithoutMemo = <Id extends SupportedId>({
+	ids,
 	renderComponent,
 	onScrollEnd,
 	columns,
@@ -58,7 +44,7 @@ const MasonryWithoutMemo = <Key extends string | number>({
 	gapY = 1,
 	height = '100%',
 	width = '100%',
-}: Props<Key>) => {
+}: Props<Id>) => {
 	const ref = useRef<HTMLDivElement>(null);
 
 	const scroll = useScrollPosition(ref);
@@ -66,30 +52,30 @@ const MasonryWithoutMemo = <Key extends string | number>({
 	useOnScrollEnd(
 		ref,
 		onScrollEnd,
-		useCallback(() => window.innerHeight, []),
+		// notify scroll end evnet when scroll is one wrapper height above wrapper scroll end
+		useCallback(() => (ref.current ? ref.current.clientHeight : 200), []),
 	);
 
-	const keysByColumns = useMemo(
+	const idsByColumns = useMemo(
 		() =>
 			Array.from({ length: columns }, (_, columnIndex) =>
-				keys.filter(
-					(_key, keyIndex) => keyIndex % columns === columnIndex,
-				),
+				ids.filter((_id, index) => index % columns === columnIndex),
 			),
-		[keys, columns],
+		[ids, columns],
 	);
 
 	return (
 		<Wrapper ref={ref} $gap={gapX} $height={height} $width={width}>
-			{keysByColumns.map((keys, columnIndex) => (
-				<Column<Key>
+			{idsByColumns.map((ids, columnIndex) => (
+				<Column<Id>
 					key={columnIndex}
 					gap={gapY}
 					scroll={scroll}
-					keys={keys}
+					ids={ids}
 					renderComponent={(props) =>
 						renderComponent({
 							...props,
+							// transform index within column into index within grid
 							index: columns * props.index + columnIndex,
 						})
 					}

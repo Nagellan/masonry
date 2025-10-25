@@ -1,6 +1,8 @@
 import { useState, useMemo, useCallback, useRef } from 'react';
-import type { JSX } from 'react';
 import styled from 'styled-components';
+
+import type { SupportedId, RenderComponent } from './types';
+import { ColumnItem } from './ColumnItem';
 
 const Wrapper = styled.div.attrs<{ $gap: number; $height: number }>(
 	(props) => ({
@@ -15,49 +17,38 @@ const Wrapper = styled.div.attrs<{ $gap: number; $height: number }>(
 	position: relative;
 `;
 
-type Props<Key> = {
-	keys: Key[];
+type Props<Id extends SupportedId> = {
+	ids: Id[];
 	gap: number;
 	scroll: number;
-	renderComponent: (props: {
-		key: Key;
-		index: number;
-		top: number | undefined;
-		onLoad: (key: Key, height: number) => void;
-		onResize: (key: Key, height: number) => void;
-	}) => JSX.Element;
+	renderComponent: RenderComponent<Id>;
 };
 
-export const Column = <Key extends string | number>({
-	keys,
+export const Column = <Id extends SupportedId>({
+	ids,
 	gap,
 	scroll,
 	renderComponent,
-}: Props<Key>) => {
+}: Props<Id>) => {
 	const ref = useRef<HTMLDivElement>(null);
 
-	const [heights, setHeights] = useState({} as Record<Key, number>);
-	const onComponentLoad = useCallback((key: Key, height: number) => {
+	const [heights, setHeights] = useState({} as Record<Id, number>);
+	const onComponentResize = useCallback((id: Id, height: number) => {
 		setHeights((prev) =>
-			prev[key] === undefined ? { ...prev, [key]: height } : prev,
-		);
-	}, []);
-	const onComponentResize = useCallback((key: Key, height: number) => {
-		setHeights((prev) =>
-			prev[key] === height ? prev : { ...prev, [key]: height },
+			prev[id] === height ? prev : { ...prev, [id]: height },
 		);
 	}, []);
 
 	const [wrapperHeight, componentPositions] = useMemo(() => {
-		const topPositions = {} as Record<Key, { top: number; bottom: number }>;
+		const topPositions = {} as Record<Id, { top: number; bottom: number }>;
 		let totalHeight = 0;
 
-		for (const key of keys) {
-			if (!(key in heights) || heights[key] === 0) {
+		for (const id of ids) {
+			if (!(id in heights) || heights[id] === 0) {
 				break;
 			}
-			const componentHeight = heights[key];
-			topPositions[key] = {
+			const componentHeight = heights[id];
+			topPositions[id] = {
 				top: totalHeight,
 				bottom: totalHeight + componentHeight,
 			};
@@ -66,39 +57,42 @@ export const Column = <Key extends string | number>({
 		}
 
 		return [totalHeight, topPositions];
-	}, [keys, heights, gap]);
+	}, [ids, heights, gap]);
 
-	const visible = useMemo<Key[]>(() => {
+	const visible = useMemo<Id[]>(() => {
 		// render all components untill all their positions are calculated
-		if (Object.keys(componentPositions).length !== keys.length) {
-			return keys;
+		if (Object.keys(componentPositions).length !== ids.length) {
+			return ids;
 		}
 
-		const result: Key[] = [];
+		const result: Id[] = [];
 
-		for (const key of keys) {
+		for (const id of ids) {
 			if (
-				componentPositions[key].bottom > scroll &&
-				componentPositions[key].top < scroll + window.innerHeight
+				componentPositions[id].bottom > scroll &&
+				componentPositions[id].top < scroll + window.innerHeight
 			) {
-				result.push(key);
+				result.push(id);
 			}
 		}
 
 		return result;
-	}, [keys, componentPositions, scroll]);
+	}, [ids, componentPositions, scroll]);
 
 	return (
 		<Wrapper $gap={gap} $height={wrapperHeight} ref={ref}>
-			{keys.map((key, keyIndex) => {
-				if (visible.includes(key)) {
-					return renderComponent({
-						key,
-						index: keyIndex,
-						top: componentPositions[key]?.top,
-						onLoad: onComponentLoad,
-						onResize: onComponentResize,
-					});
+			{ids.map((id, index) => {
+				if (visible.includes(id)) {
+					return (
+						<ColumnItem<Id>
+							key={id}
+							id={id}
+							index={index}
+							top={componentPositions[id]?.top}
+							renderComponent={renderComponent}
+							onResize={onComponentResize}
+						/>
+					);
 				}
 				return null;
 			})}
