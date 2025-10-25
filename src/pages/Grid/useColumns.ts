@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 
-// TODO: refactor
-
 const getColumns = () => {
 	const width = window.innerWidth;
 
@@ -20,7 +18,7 @@ const getColumns = () => {
 		return 6;
 	}
 
-	// 4K
+	// 2K+
 	return 12;
 };
 
