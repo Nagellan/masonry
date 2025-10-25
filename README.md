@@ -1,4 +1,6 @@
-# masonry
+# Masonry _by ireknazm_
+
+> No code was copied from anywhere, no line of code was generated with AI. I am proud of the work I've done.
 
 ## Install
 
@@ -25,7 +27,7 @@ npm run build
 # run production server from built bundle
 npm run preview
 
-# run unit tests
+# run tests
 npm run test
 ```
 
