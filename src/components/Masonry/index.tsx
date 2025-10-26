@@ -29,7 +29,7 @@ type Props<Id extends SupportedId> = {
 	ids: Id[];
 	renderComponent: RenderComponent<Id>;
 	onScrollEnd?: () => void;
-	onScrollHeightChange: (height: number) => void;
+	onScrollHeightChange?: (height: number) => void;
 	columns: number;
 	threshold?: number;
 	gapX?: number;
@@ -83,7 +83,7 @@ const MasonryWithoutMemo = <Id extends SupportedId>({
 		(height: number) => {
 			setMaxColumnHeight((prev) => {
 				if (height > prev) {
-					onScrollHeightChange(height);
+					onScrollHeightChange?.(height);
 					return height;
 				}
 				return prev;
