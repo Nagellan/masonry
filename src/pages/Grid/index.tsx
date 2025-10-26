@@ -15,8 +15,12 @@ export const Grid = () => {
 	const [page, setPage] = useState<number>(1);
 	const [photos, setPhotos] = useState<Photo[]>([]);
 	const [loading, setLoading] = useState<boolean>(true);
-	const [inputValue, setInputValue] = useState<string>('');
-	const [search, setSearch] = useState<string>('');
+	const [inputValue, setInputValue] = useState<string>(
+		() => localStorage.getItem('search') ?? '',
+	);
+	const [search, setSearch] = useState<string>(
+		() => localStorage.getItem('search') ?? '',
+	);
 	const [noMorePages, setNoMorePages] = useState<boolean>(false);
 
 	useEffect(() => {
@@ -41,6 +45,7 @@ export const Grid = () => {
 	const onSearch = useDebouncedCallback((value: string) => {
 		setSearch(value);
 		setPage(1);
+		localStorage.setItem('search', value);
 	}, 300);
 
 	const title = (
