@@ -40,7 +40,7 @@ export const Column = <Id extends SupportedId>({
 	const [visibleEnd, setVisibleEnd] = useState(ids.length - 1);
 	const [heights, setHeights] = useState<number[]>([]);
 	const [positions, setPositions] = useState<number[]>([]);
-	const [, setPrevIds] = useState(ids);
+	const [prevIds, setPrevIds] = useState(ids);
 
 	// total heights of all elements + gaps between them
 	const wrapperHeight = useMemo(
@@ -65,34 +65,46 @@ export const Column = <Id extends SupportedId>({
 
 	// listen to ids array updates
 	useEffect(() => {
-		// everything is inside setPrevIds callback to avoid having prevIds as a dependency
-		setPrevIds((prevIds) => {
-			let same = true;
-			for (let i = 0; i < Math.min(prevIds.length, ids.length); i++) {
-				if (prevIds[i] !== ids[i]) {
-					same = false;
-					break;
+		let same = true;
+		for (let i = 0; i < Math.min(prevIds.length, ids.length); i++) {
+			if (prevIds[i] !== ids[i]) {
+				same = false;
+				break;
+			}
+		}
+		// if nothing is changed, do nothing
+		if (same && prevIds.length === ids.length) {
+			return;
+		}
+		// if new ids are just additions/reductions to previous ones, update only diff visibility
+		if (same) {
+			setVisibleEnd(ids.length);
+		}
+		// if new ids are different, reindex the whole state
+		else {
+			const prevIdIndexes = prevIds.reduce(
+				(prev, id, i) => {
+					prev[id] = i;
+					return prev;
+				},
+				{} as Record<Id, number>,
+			);
+			setPositions([]);
+			setHeights((prevHeights) => {
+				const newHeights = [];
+				for (let i = 0; i < ids.length; i++) {
+					const id = ids[i];
+					const prevIdIndex: number = prevIdIndexes[id];
+					const prevIdHeight = prevHeights[prevIdIndex];
+					newHeights[i] = prevIdHeight;
 				}
-			}
-			// if nothing is changed, do nothing
-			if (same && prevIds.length === ids.length) {
-				return prevIds;
-			}
-			// if new ids are just additions/reductions to previous ones, update only diff visibility
-			if (same) {
-				setVisibleEnd(ids.length);
-			}
-			// if new ids are different, reset the whole state, because indexes changed
-			// and we need to recalculate everything from the beginning
-			else {
-				setHeights([]);
-				setPositions([]);
-				setVisibleStart(0);
-				setVisibleEnd(ids.length - 1);
-			}
-			return ids;
-		});
-	}, [ids]);
+				return newHeights;
+			});
+			setVisibleStart(0);
+			setVisibleEnd(ids.length - 1);
+		}
+		setPrevIds(ids);
+	}, [ids, prevIds]);
 
 	// recalculate and update positions when all heights are present
 	useEffect(() => {
