@@ -106,3 +106,5 @@ What can be achieved by implementing this solution:
 
 - It becomes possible to animate item components repositioning on columns amount change.
 - It may improve performance and fix flickering as there would be no item components reindexing, reshuffling between columns and massive rerendering due to columns amount change.
+
+Also I would like to experiment on grid restoration while navigating back to grid from a photo page. Now I save scroll position and pages count to local storage on photo click. Then I fetch all pages previously loaded and scroll into the previous scroll position. I would like to A/B test another approach — implementing keep-alive routes. Thus navigating to photo page wouldn't unmount grid page, so there's no need to refetch data and recalculate states. While this may affect performance and browser RAM, it may provide nice user experience.
