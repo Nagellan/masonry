@@ -1,4 +1,5 @@
 import { useRef, useMemo, memo, useState } from 'react';
+import type { HTMLAttributes } from 'react';
 import styled from 'styled-components';
 
 import type { SupportedId, RenderComponent } from './types';
@@ -27,14 +28,14 @@ const Wrapper = styled.div<{
 type Props<Id extends SupportedId> = {
 	ids: Id[];
 	renderComponent: RenderComponent<Id>;
-	onScrollEnd: () => void;
+	onScrollEnd?: () => void;
 	columns: number;
 	threshold?: number;
 	gapX?: number;
 	gapY?: number;
 	height?: number | `${number}%`;
 	width?: number | `${number}%`;
-};
+} & HTMLAttributes<HTMLDivElement>;
 
 const MasonryWithoutMemo = <Id extends SupportedId>({
 	ids,
@@ -46,6 +47,7 @@ const MasonryWithoutMemo = <Id extends SupportedId>({
 	gapY = 1,
 	height = '100%',
 	width = '100%',
+	...props
 }: Props<Id>) => {
 	const ref = useRef<HTMLDivElement>(null);
 
@@ -73,7 +75,13 @@ const MasonryWithoutMemo = <Id extends SupportedId>({
 	);
 
 	return (
-		<Wrapper ref={ref} $gap={gapX} $height={height} $width={width}>
+		<Wrapper
+			ref={ref}
+			$gap={gapX}
+			$height={height}
+			$width={width}
+			{...props}
+		>
 			{idsByColumns.map((ids, columnIndex) => (
 				<Column<Id>
 					key={columnIndex}

@@ -3,12 +3,12 @@ import type { RefObject } from 'react';
 
 export const useOnScrollEnd = (
 	ref: RefObject<HTMLElement | null>,
-	onEnd: () => void,
+	onEnd?: () => void,
 	threshold: number | (() => number) = 0,
 ) => {
 	useEffect(() => {
 		const element = ref.current;
-		if (!element) return;
+		if (!element || !onEnd) return;
 
 		const onScroll = () => {
 			const numericThreshold =
