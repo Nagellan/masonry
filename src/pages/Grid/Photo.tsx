@@ -29,16 +29,14 @@ type Props = {
 	src: string;
 	alt?: string;
 	tabIndex: number;
-	style: Record<string, string>;
 	ref: RefObject<HTMLElement | null>;
 };
 
-export const Photo = memo(({ id, src, alt, tabIndex, style, ref }: Props) => {
+export const Photo = memo(({ id, src, alt, tabIndex, ref }: Props) => {
 	return (
 		<PhotoLink
 			to={`/photo/${id}`}
 			tabIndex={tabIndex}
-			style={style}
 			ref={(el) => {
 				ref.current = el;
 			}}

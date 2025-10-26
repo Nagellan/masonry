@@ -1,4 +1,4 @@
-import { memo, useMemo, useRef, useCallback } from 'react';
+import { memo, useRef, useCallback, useEffect } from 'react';
 
 import type { SupportedId, RenderComponent } from './types';
 import { useHeight } from './hooks/useHeight';
@@ -25,17 +25,17 @@ const ColumnItemWithoutMemo = <Id extends SupportedId>({
 		useCallback((height) => onResize(index, height), [index, onResize]),
 	);
 
-	const style = useMemo(
-		() => ({
-			top: `${top ?? 0}px`,
-			// while position is not yet calculated, hide photo to avoid shifts & blinks
-			visibility: top === undefined ? 'hidden' : 'visible',
-			position: 'absolute',
-		}),
-		[top],
-	);
+	// apply positioning styles
+	useEffect(() => {
+		if (!ref.current) return;
 
-	return renderComponent({ id, index, style, ref });
+		ref.current.style.top = `${top ?? 0}px`;
+		// while position is not yet calculated, hide photo to avoid shifts & blinks
+		ref.current.style.visibility = top === undefined ? 'hidden' : 'visible';
+		ref.current.style.position = 'absolute';
+	}, [top]);
+
+	return renderComponent({ id, index, ref });
 };
 
 export const ColumnItem = memo(

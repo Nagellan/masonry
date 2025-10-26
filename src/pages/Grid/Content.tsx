@@ -24,7 +24,7 @@ export const Content = ({ photos, onScrollEnd }: Props) => {
 	const photoIds = useMemo(() => photos.map((photo) => photo.id), [photos]);
 
 	const renderComponent = useCallback<RenderComponent<PhotoType['id']>>(
-		({ id, index, style, ref }) => {
+		({ id, index, ref }) => {
 			const photo = photos[index];
 			return (
 				<Photo
@@ -34,7 +34,6 @@ export const Content = ({ photos, onScrollEnd }: Props) => {
 					alt={photo.alt}
 					// serve 3 indexes for links in a footer
 					tabIndex={4 + index}
-					style={style}
 					ref={ref}
 				/>
 			);
