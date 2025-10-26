@@ -97,3 +97,12 @@ Images were optimized with `srcset`, `sizes`, and `fetchpriority` attributes. De
 | SI:    | 3.3s   |
 
 Application was also tested on slow network and CPU throttling emulations. Responsiveness was checked by crazy resizing the browser window: it may freeze a bit and blink on columns amount change, but imho that's a satisfactory result.
+
+## Future works
+
+If I have more time, I would like to perform an A/B test with an enhanced solution. The idea is to try getting rid of the column components inside masonry and instead locate item components both vertically and horizontally (now only vertical positions are calculated as width and horizonal positioning are handled by column components).
+
+What can be achieved by implementing this solution:
+
+- It becomes possible to animate item components repositioning on columns amount change.
+- It may improve performance and fix flickering as there would be no item components reindexing, reshuffling between columns and massive rerendering due to columns amount change.
