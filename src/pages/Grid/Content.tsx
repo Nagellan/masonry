@@ -15,13 +15,18 @@ const Wrapper = styled.main`
 
 type Props = {
 	photos: PhotoType[];
+	page: number;
 	onScrollEnd: () => void;
 };
 
-export const Content = ({ photos, onScrollEnd }: Props) => {
+export const Content = ({ photos, page, onScrollEnd }: Props) => {
 	const columns = useColumns();
 
 	const photoIds = useMemo(() => photos.map((photo) => photo.id), [photos]);
+
+	const onPhotoClick = useCallback(() => {
+		localStorage.setItem('lastPage', String(page));
+	}, [page]);
 
 	const renderComponent = useCallback<RenderComponent<PhotoType['id']>>(
 		({ id, index, ref }) => {
@@ -34,11 +39,12 @@ export const Content = ({ photos, onScrollEnd }: Props) => {
 					alt={photo.alt}
 					// serve 3 indexes for links in a footer
 					tabIndex={4 + index}
+					onClick={onPhotoClick}
 					ref={ref}
 				/>
 			);
 		},
-		[photos],
+		[photos, onPhotoClick],
 	);
 
 	return (

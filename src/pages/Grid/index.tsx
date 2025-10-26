@@ -25,16 +25,31 @@ export const Grid = () => {
 
 	useEffect(() => {
 		setLoading(true);
-		api.getPhotos(page, 80, search).then((response) => {
-			if (page === 1) {
-				setPhotos(response.photos);
-			} else {
-				setPhotos((prevPhotos) => [...prevPhotos, ...response.photos]);
-			}
 
-			setLoading(false);
-			setNoMorePages(!response.next_page);
-		});
+		const lastPage = localStorage.getItem('lastPage');
+
+		if (lastPage) {
+			localStorage.removeItem('lastPage');
+			api.getAllPhotos(Number(lastPage), 80, search).then((response) => {
+				setPhotos(response.photos);
+				setNoMorePages(!response.nextPage);
+				setLoading(false);
+			});
+		} else {
+			api.getPhotos(page, 80, search).then((response) => {
+				if (page === 1) {
+					setPhotos(response.photos);
+				} else {
+					setPhotos((prevPhotos) => [
+						...prevPhotos,
+						...response.photos,
+					]);
+				}
+
+				setNoMorePages(!response.nextPage);
+				setLoading(false);
+			});
+		}
 	}, [page, search]);
 
 	const onScrollEnd = useDebouncedCallback(() => {
@@ -84,7 +99,7 @@ export const Grid = () => {
 					/>
 				}
 			/>
-			<Content photos={photos} onScrollEnd={onScrollEnd} />
+			<Content photos={photos} page={page} onScrollEnd={onScrollEnd} />
 			<PageFooter />
 		</Page>
 	);

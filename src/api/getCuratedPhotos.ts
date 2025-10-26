@@ -1,12 +1,21 @@
 import type { Photo } from './types';
 
-type Response = {
+type RawResponse = {
 	photos: Photo[];
 	page: number;
 	per_page: number;
 	total_results: number;
 	prev_page?: string;
 	next_page?: string;
+};
+
+type Response = {
+	photos: Photo[];
+	page: number;
+	perPage: number;
+	totalResults: number;
+	prevPage?: string;
+	nextPage?: string;
 };
 
 export async function getCuratedPhotos(
@@ -22,13 +31,20 @@ export async function getCuratedPhotos(
 		per_page: String(perPage),
 	});
 
-	const response = await fetch(
+	const response: RawResponse = await fetch(
 		`https://api.pexels.com/v1/curated?${searchParams}`,
 		{
 			method: 'GET',
 			headers: { Authorization: authToken },
 		},
-	);
+	).then((response) => response.json());
 
-	return response.json() as Promise<Response>; // casted to typify the response
+	return {
+		photos: response.photos,
+		page: response.page,
+		perPage: response.per_page,
+		totalResults: response.total_results,
+		prevPage: response.prev_page,
+		nextPage: response.next_page,
+	};
 }

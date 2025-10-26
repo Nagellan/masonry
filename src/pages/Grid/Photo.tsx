@@ -30,9 +30,10 @@ type Props = {
 	alt?: string;
 	tabIndex: number;
 	ref: RefObject<HTMLElement | null>;
+	onClick?: () => void;
 };
 
-export const Photo = memo(({ id, src, alt, tabIndex, ref }: Props) => {
+export const Photo = memo(({ id, src, alt, tabIndex, ref, onClick }: Props) => {
 	return (
 		<PhotoLink
 			to={`/photo/${id}`}
@@ -40,6 +41,7 @@ export const Photo = memo(({ id, src, alt, tabIndex, ref }: Props) => {
 			ref={(el) => {
 				ref.current = el;
 			}}
+			onClick={onClick}
 			aria-label={`Open details and full-size picture of ${alt}`}
 		>
 			<Container
