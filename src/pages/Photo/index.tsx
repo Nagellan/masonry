@@ -1,6 +1,5 @@
 import { useCallback, useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import styled from 'styled-components';
 
 import { Page } from '@/components/page/Page';
 import { PageHeader } from '@/components/page/PageHeader';
@@ -12,11 +11,7 @@ import { NotFoundError } from '@/api/errors';
 import type { Photo as PhotoType } from '@/api/types';
 
 import { Content } from './Content';
-
-const FixedSizeButton = styled(Button)`
-	height: 36px;
-	width: 36px;
-`;
+import { ZoomControl } from './ZoomControl';
 
 export const Photo = () => {
 	const navigate = useNavigate();
@@ -66,27 +61,18 @@ export const Photo = () => {
 					</a>
 				}
 				left={<Button onClick={goBack}>Back</Button>}
-				right={[
-					<FixedSizeButton
-						key="minus"
-						onClick={() =>
-							setWidth((prev) => Math.max(prev - 10, 10))
-						}
-					>
-						-
-					</FixedSizeButton>,
-					<Button key="full" onClick={() => setWidth(100)}>
-						{width}%
-					</Button>,
-					<FixedSizeButton
-						key="plus"
-						onClick={() =>
+				right={
+					<ZoomControl
+						zoom={width}
+						onZoomIn={() =>
 							setWidth((prev) => Math.min(prev + 10, 200))
 						}
-					>
-						+
-					</FixedSizeButton>,
-				]}
+						onZoomOut={() =>
+							setWidth((prev) => Math.max(prev - 10, 10))
+						}
+						onZoomFull={() => setWidth(100)}
+					/>
+				}
 			/>
 			<Content photo={photo} width={width} />
 			<PageFooter />
