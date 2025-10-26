@@ -67,9 +67,14 @@ export const Grid = () => {
 					<Input
 						value={inputValue}
 						placeholder="Search"
+						clearable
 						onChange={(event) => {
 							setInputValue(event.target.value);
 							onSearch(event.target.value);
+						}}
+						onClear={() => {
+							setInputValue('');
+							onSearch('');
 						}}
 					/>
 				}

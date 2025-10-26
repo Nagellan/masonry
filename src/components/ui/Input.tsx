@@ -1,7 +1,12 @@
+import { memo } from 'react';
 import type { InputHTMLAttributes } from 'react';
 import styled from 'styled-components';
 
-const Wrapper = styled.input`
+import { Button } from './Button';
+
+const Wrapper = styled.div``;
+
+const Component = styled.input`
 	background-color: transparent;
 	border: none;
 	padding: 10px 12px;
@@ -13,6 +18,24 @@ const Wrapper = styled.input`
 	}
 `;
 
-export const Input = (props: InputHTMLAttributes<HTMLInputElement>) => {
-	return <Wrapper {...props} />;
-};
+const CloseButton = styled(Button)`
+	position: absolute;
+	right: 2px;
+	width: 36px;
+`;
+
+type Props = {
+	clearable?: boolean;
+	onClear?: () => void;
+} & InputHTMLAttributes<HTMLInputElement>;
+
+export const Input = memo(({ clearable = false, onClear, ...props }: Props) => {
+	return (
+		<Wrapper>
+			<Component {...props} />
+			{clearable && props.value && (
+				<CloseButton onClick={onClear}>✖</CloseButton>
+			)}
+		</Wrapper>
+	);
+});

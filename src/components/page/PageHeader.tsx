@@ -50,9 +50,17 @@ type Props = {
 export const PageHeader = memo(({ left, title, right }: Props) => {
 	return (
 		<Header>
-			{left ? <LeftActions>{left}</LeftActions> : <div />}
+			{left ? (
+				<LeftActions>{left}</LeftActions>
+			) : (
+				<div style={{ marginRight: 'auto' }} />
+			)}
 			<Title>{title}</Title>
-			{right ? <RightActions>{right}</RightActions> : <div />}
+			{right ? (
+				<RightActions>{right}</RightActions>
+			) : (
+				<div style={{ marginLeft: 'auto' }} />
+			)}
 		</Header>
 	);
 });

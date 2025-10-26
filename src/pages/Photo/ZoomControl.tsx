@@ -29,13 +29,13 @@ export const ZoomControl = ({
 	return (
 		<Wrapper>
 			<FixedSizeButton key="minus" onClick={onZoomOut}>
-				-
+				–
 			</FixedSizeButton>
 			<Button key="full" onClick={onZoomFull}>
 				{zoom}%
 			</Button>
 			<FixedSizeButton key="plus" onClick={onZoomIn}>
-				+
+				✚
 			</FixedSizeButton>
 		</Wrapper>
 	);
