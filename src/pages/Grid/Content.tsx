@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useRef } from 'react';
 import styled from 'styled-components';
 
 import { Masonry } from '@/components/Masonry';
@@ -20,13 +20,27 @@ type Props = {
 };
 
 export const Content = ({ photos, page, onScrollEnd }: Props) => {
+	const masonryRef = useRef<HTMLDivElement>(null);
+
 	const columns = useColumns();
 
 	const photoIds = useMemo(() => photos.map((photo) => photo.id), [photos]);
 
 	const onPhotoClick = useCallback(() => {
 		localStorage.setItem('lastPage', String(page));
+		if (!masonryRef.current) return;
+		localStorage.setItem(
+			'lastScroll',
+			String(masonryRef.current.scrollTop),
+		);
 	}, [page]);
+
+	const onScrollHeightChange = useCallback(() => {
+		const lastScroll = localStorage.getItem('lastScroll');
+		if (!lastScroll || !masonryRef.current) return;
+		localStorage.removeItem('lastScroll');
+		masonryRef.current.scroll({ top: Number(lastScroll) });
+	}, []);
 
 	const renderComponent = useCallback<RenderComponent<PhotoType['id']>>(
 		({ id, index, ref }) => {
@@ -49,10 +63,12 @@ export const Content = ({ photos, page, onScrollEnd }: Props) => {
 
 	return (
 		<Wrapper>
-			<Masonry
+			<Masonry<PhotoType['id']>
+				ref={masonryRef}
 				ids={photoIds}
 				renderComponent={renderComponent}
 				onScrollEnd={onScrollEnd}
+				onScrollHeightChange={onScrollHeightChange}
 				columns={columns}
 			/>
 		</Wrapper>

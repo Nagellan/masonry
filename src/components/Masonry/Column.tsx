@@ -23,6 +23,7 @@ type Props<Id extends SupportedId> = {
 	scroll: number;
 	viewportHeight: number;
 	threshold: number;
+	onHeightChange: (height: number) => void;
 	renderComponent: RenderComponent<Id>;
 };
 
@@ -32,6 +33,7 @@ export const Column = <Id extends SupportedId>({
 	scroll,
 	viewportHeight,
 	threshold,
+	onHeightChange,
 	renderComponent,
 }: Props<Id>) => {
 	const ref = useRef<HTMLDivElement>(null);
@@ -62,6 +64,11 @@ export const Column = <Id extends SupportedId>({
 			return newHeights;
 		});
 	}, []);
+
+	// listen to height change
+	useEffect(() => {
+		onHeightChange(wrapperHeight);
+	}, [wrapperHeight, onHeightChange]);
 
 	// listen to ids array updates
 	useEffect(() => {

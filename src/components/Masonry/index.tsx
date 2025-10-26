@@ -1,5 +1,5 @@
-import { useRef, useMemo, memo, useState } from 'react';
-import type { HTMLAttributes } from 'react';
+import { useRef, useMemo, memo, useState, useCallback } from 'react';
+import type { HTMLAttributes, RefObject } from 'react';
 import styled from 'styled-components';
 
 import type { SupportedId, RenderComponent } from './types';
@@ -29,24 +29,28 @@ type Props<Id extends SupportedId> = {
 	ids: Id[];
 	renderComponent: RenderComponent<Id>;
 	onScrollEnd?: () => void;
+	onScrollHeightChange: (height: number) => void;
 	columns: number;
 	threshold?: number;
 	gapX?: number;
 	gapY?: number;
 	height?: number | `${number}%`;
 	width?: number | `${number}%`;
+	ref?: RefObject<HTMLDivElement | null>;
 } & HTMLAttributes<HTMLDivElement>;
 
 const MasonryWithoutMemo = <Id extends SupportedId>({
 	ids,
 	renderComponent,
 	onScrollEnd,
+	onScrollHeightChange,
 	columns,
 	threshold = 400,
 	gapX = 1,
 	gapY = 1,
 	height = '100%',
 	width = '100%',
+	ref: externalRef,
 	...props
 }: Props<Id>) => {
 	const ref = useRef<HTMLDivElement>(null);
@@ -74,9 +78,26 @@ const MasonryWithoutMemo = <Id extends SupportedId>({
 		[ids, columns],
 	);
 
+	const [, setMaxColumnHeight] = useState<number>(0);
+	const onColumnHeightChange = useCallback(
+		(height: number) => {
+			setMaxColumnHeight((prev) => {
+				if (height > prev) {
+					onScrollHeightChange(height);
+					return height;
+				}
+				return prev;
+			});
+		},
+		[onScrollHeightChange],
+	);
+
 	return (
 		<Wrapper
-			ref={ref}
+			ref={(r) => {
+				ref.current = r;
+				if (externalRef) externalRef.current = r;
+			}}
 			$gap={gapX}
 			$height={height}
 			$width={width}
@@ -90,6 +111,7 @@ const MasonryWithoutMemo = <Id extends SupportedId>({
 					ids={ids}
 					threshold={threshold}
 					viewportHeight={viewportHeight}
+					onHeightChange={onColumnHeightChange}
 					renderComponent={(props) =>
 						renderComponent({
 							...props,

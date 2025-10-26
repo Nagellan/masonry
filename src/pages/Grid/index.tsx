@@ -12,7 +12,10 @@ import type { Photo } from '@/api/types';
 import { Content } from './Content';
 
 export const Grid = () => {
-	const [page, setPage] = useState<number>(1);
+	const [page, setPage] = useState<number>(() => {
+		const lastPage = localStorage.getItem('lastPage');
+		return lastPage ? Number(lastPage) : 1;
+	});
 	const [photos, setPhotos] = useState<Photo[]>([]);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [inputValue, setInputValue] = useState<string>(
