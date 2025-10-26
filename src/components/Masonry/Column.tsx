@@ -96,7 +96,8 @@ export const Column = <Id extends SupportedId>({
 
 	// recalculate and update positions when all heights are present
 	useEffect(() => {
-		if (ids.length !== heights.filter(Boolean).length) return;
+		if (ids.length !== heights.filter((h) => h !== undefined).length)
+			return;
 		let totalHeight = 0;
 		const newPositions = [];
 		for (let i = 0; i < ids.length; i++) {
@@ -109,7 +110,8 @@ export const Column = <Id extends SupportedId>({
 
 	// recalculate visibility range when all positions are present
 	useEffect(() => {
-		if (ids.length !== positions.filter(Boolean).length) return;
+		if (ids.length !== positions.filter((p) => p !== undefined).length)
+			return;
 		let index = 0;
 		while (positions[index] + heights[index] < scroll - threshold) {
 			index++;
