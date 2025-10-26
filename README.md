@@ -96,7 +96,7 @@ Images were optimized with `srcset`, `sizes`, and `fetchpriority` attributes. De
 | CLS:   | 0      |
 | SI:    | 3.3s   |
 
-Application was also tested on slow network and CPU throttling emulations. Responsiveness was checked by crazy resizing the browser window: it may freeze a bit and blink on columns amount change, but imho that's a satisfactory result.
+Application was also tested on slow network and CPU throttling emulations. Responsiveness was checked by crazy resizing the browser window: it may freeze a bit and blink on columns amount change, but imho that's a satisfactory result as no users really ofthen resize their windows.
 
 ## Future works
 
