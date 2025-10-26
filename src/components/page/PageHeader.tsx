@@ -13,7 +13,6 @@ const Header = styled.header`
 
 	display: flex;
 	flex-direction: row;
-	justify-content: space-between;
 	flex-wrap: wrap;
 	gap: 4px;
 
@@ -27,10 +26,19 @@ const Actions = styled(Bubble)`
 	gap: 4px;
 `;
 
+const LeftActions = styled(Actions)`
+	margin-right: auto;
+`;
+
+const RightActions = styled(Actions)`
+	margin-left: auto;
+`;
+
 const Title = styled(Bubble)`
 	font-size: 16px;
 	line-height: 16px;
 	padding: 14px 16px;
+	margin: auto;
 `;
 
 type Props = {
@@ -42,9 +50,9 @@ type Props = {
 export const PageHeader = memo(({ left, title, right }: Props) => {
 	return (
 		<Header>
-			{left ? <Actions>{left}</Actions> : <div />}
+			{left ? <LeftActions>{left}</LeftActions> : <div />}
 			<Title>{title}</Title>
-			{right ? <Actions>{right}</Actions> : <div />}
+			{right ? <RightActions>{right}</RightActions> : <div />}
 		</Header>
 	);
 });

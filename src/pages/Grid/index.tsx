@@ -1,9 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 
 import { Page } from '@/components/page/Page';
 import { PageHeader } from '@/components/page/PageHeader';
 import { PageLoading } from '@/components/page/PageLoading';
 import { PageFooter } from '@/components/page/PageFooter';
+import { Input } from '@/components/ui/Input';
 import api from '@/api';
 import type { Photo } from '@/api/types';
 
@@ -13,39 +15,44 @@ export const Grid = () => {
 	const [page, setPage] = useState<number>(1);
 	const [photos, setPhotos] = useState<Photo[]>([]);
 	const [loading, setLoading] = useState<boolean>(true);
+	const [inputValue, setInputValue] = useState<string>('');
+	const [search, setSearch] = useState<string>('');
+	const [noMorePages, setNoMorePages] = useState<boolean>(false);
 
 	useEffect(() => {
 		setLoading(true);
-		api.getPhotos(page, 80).then((response) => {
-			setPhotos((prevPhotos) => [...prevPhotos, ...response.photos]);
+		api.getPhotos(page, 80, search).then((response) => {
 			if (page === 1) {
-				// first load must be instant
-				setLoading(false);
+				setPhotos(response.photos);
 			} else {
-				// other loads must be postponed to avoid multiple instant onScrollEnd calls
-				setTimeout(() => {
-					setLoading(false);
-				}, 1000);
+				setPhotos((prevPhotos) => [...prevPhotos, ...response.photos]);
 			}
+
+			setLoading(false);
+			setNoMorePages(!response.next_page);
 		});
-	}, [page]);
+	}, [page, search]);
 
-	const onScrollEnd = useCallback(() => {
-		if (loading) return;
-
+	const onScrollEnd = useDebouncedCallback(() => {
+		if (noMorePages) return;
 		setPage((prev) => prev + 1);
-	}, [loading]);
+	}, 300);
+
+	const onSearch = useDebouncedCallback((value: string) => {
+		setSearch(value);
+		setPage(1);
+	}, 300);
+
+	const title = (
+		<div>
+			Masonry <i>by ireknazm</i>
+		</div>
+	);
 
 	if (loading && page === 1) {
 		return (
 			<Page>
-				<PageHeader
-					title={
-						<div>
-							Masonry <i>by ireknazm</i>
-						</div>
-					}
-				/>
+				<PageHeader title={title} />
 				<PageLoading />
 				<PageFooter />
 			</Page>
@@ -55,10 +62,16 @@ export const Grid = () => {
 	return (
 		<Page>
 			<PageHeader
-				title={
-					<div>
-						Masonry <i>by ireknazm</i>
-					</div>
+				title={title}
+				right={
+					<Input
+						value={inputValue}
+						placeholder="Search"
+						onChange={(event) => {
+							setInputValue(event.target.value);
+							onSearch(event.target.value);
+						}}
+					/>
 				}
 			/>
 			<Content photos={photos} onScrollEnd={onScrollEnd} />
